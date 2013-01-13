@@ -44,6 +44,7 @@
 
 % March     1997  - Original version
 % September 2001  - Code tidied and plots improved.
+% January   2013  - More Octave compatibility (Carnë Draug)
 
 function [amplitude, phase] = scalogram(signal, minwavelength, mult, ...
 					nscales, sigmaOnf, threeD)
@@ -54,11 +55,11 @@ function [amplitude, phase] = scalogram(signal, minwavelength, mult, ...
 
 sze = size(signal);
 
-if(sze(1) == 1 & sze(2) > 1)     % data is ok - do nothing
+if(sze(1) == 1 && sze(2) > 1)     % data is ok - do nothing
   ;
-elseif(sze(1) > 1 & sze(2) == 1) % signal was a column vector - transpose the data
+elseif(sze(1) > 1 && sze(2) == 1) % signal was a column vector - transpose the data
   signal = signal';           
-elseif(sze(1) > 1 & sze(2) > 1)  % 2D data
+elseif(sze(1) > 1 && sze(2) > 1)  % 2D data
   error('scalogram: data must be a 1D vector')
 else
   error('scalogram: data must be a 1D vector - with more than one element')  
@@ -133,11 +134,7 @@ hsv(:,:,3) = ones(size(amplitude));           % intensity is fixed at 1.
 
 subplot(2,1,1), plot(signal), axis([0,ndata,rmin,rmax]), title('signal');
 h = subplot(2,1,2); 
-if Octave
-    imagesc(hsv2rgboctave(hsv));
-else
-    image(hsv2rgb(hsv));
-end
+image(hsv2rgb(hsv));
 title('phase scalogram');
 set(h,'YTick',tickLocations);
 if ~Octave
@@ -152,11 +149,7 @@ hsv(:,:,2) = amplitude/max(max(amplitude));   % saturation varies with amplitude
 
 subplot(2,1,1), plot(signal), axis([0,ndata,rmin,rmax]), title('signal');
 h = subplot(2,1,2); 
-if Octave
-    imagesc(hsv2rgboctave(hsv));
-else
-    image(hsv2rgb(hsv));
-end
+image(hsv2rgb(hsv));
 
 title('scalogram:   phase encoded by hue, amplitude encoded by saturation');
 set(h,'YTick',tickLocations);
@@ -173,8 +166,8 @@ if threeD            % Generate 3D plots.
     title('amplitude surface'); 
     h = get(h,'CurrentAxes');
     set(h,'YTick',tickLocations);
-    if ~Octave    
-	set(h,'YTickLabel',tickValues);
+    if ~Octave
+        set(h,'YTickLabel',tickValues);
     end
     ylabel('scale');
 
@@ -184,50 +177,8 @@ if threeD            % Generate 3D plots.
     title('amplitude surface, phase encoded by hue');
     h = get(h,'CurrentAxes');
     set(h,'YTick',tickLocations);
-    if ~Octave    
-	set(h,'YTickLabel',tickValues);
+    if ~Octave
+        set(h,'YTickLabel',tickValues);
     end
     ylabel('scale');
 end
-
-
-%------------------------------------------------------------------
-% Function to convert image defined by HSV values to rgb
-% Needed for Octave 
-
-function rgbimage = hsv2rgboctave(hsvimage)
-
-    % Code follows Foley, van Dam, Feiner and Hughes  page 593
-	
-	[rows,cols,depth] = size(hsvimage);
-	
-	h = hsvimage(:,:,1);
-	s = hsvimage(:,:,2);	    
-	v = hsvimage(:,:,3);	    	    
-	    
-	h = h(:); s = s(:); v = v(:);
-	
-	h = 6*h;
-	i = fix((h-eps)*6);
-	f = h-i;
-	p = v.*(1-s);
-	q = v.*(1-s.*f);
-	t = v.*(1-(s.*(1-f)));
-	
-	i0 = find(i==0);
-	i1 = find(i==1);
-	i2 = find(i==2);
-	i3 = find(i==3);
-	i4 = find(i==4);
-	i5 = find(i==5);
-	
-	r = zeros(size(h)); 	g = zeros(size(h)); 	b = zeros(size(h)); 
-	
-	r(i0)=v(i0); r(i1)=q(i1); r(i2)=p(i2); r(i3)=p(i3); r(i4)=t(i4); r(i5)=v(i5);
-	g(i0)=t(i0); g(i1)=v(i1); g(i2)=v(i2); g(i3)=q(i3); g(i4)=p(i4); g(i5)=p(i5);	
-	b(i0)=p(i0); b(i1)=p(i1); b(i2)=t(i2); b(i3)=v(i3); b(i4)=v(i4); b(i5)=q(i5);	
-	
-	rgbimage(:,:,1) = reshape(r,rows,cols);
-	rgbimage(:,:,2) = reshape(g,rows,cols);
-	rgbimage(:,:,3) = reshape(b,rows,cols);	
-	
