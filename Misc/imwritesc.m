@@ -27,20 +27,9 @@
 
 function imwritesc(im,name)
 
-    v=version; Octave = v(1)<'5';   % Crude Octave test
-    
     if strcmp(class(im), 'double')
-	im = im - min(im(:));       % Offset so that min value is 0.
-	im = im./max(im(:));        % Rescale so that max is 1.
+      im = im - min(im(:));       % Offset so that min value is 0.
+      im = im./max(im(:));        % Rescale so that max is 1.
     end
-    
-    if Octave    % Code specific to Octave and ImageMagick
-	if strcmp(class(im), 'double')
-	    im = 255*im;            % Rescale so that max is 255
-	end	
-	imwrite(name,im);          % Note Octave imwrite has args reversed
-	
-    else
-        imwrite(im,name);
-    end
-    
+    imwrite(im,name);
+
