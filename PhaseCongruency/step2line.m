@@ -37,10 +37,9 @@
 %
 % 1997            Original version
 % September 2011  Modified to allow number of cycles to be specified
+% January 2013    Fix Octave compatibility
 
 function im = step2line(nscales, ampexponent, Npts, nCycles, phaseCycles)
-    
-    Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
 
     if ~exist('Npts', 'var'),    Npts = 256;    end
     if ~exist('nCycles', 'var'), nCycles = 1.5; end
@@ -52,12 +51,12 @@ function im = step2line(nscales, ampexponent, Npts, nCycles, phaseCycles)
     off = 0;
     
     for row = 1:Npts
-	signal = zeros(1,Npts);
-	for scale = 1:2:(nscales*2-1)
-	    signal = signal + scale^ampexponent*sin(scale*x + off);
-	end
-	im(row,:) = signal;
-	off = off + phaseCycles*pi/Npts;
+        signal = zeros(1,Npts);
+        for scale = 1:2:(nscales*2-1)
+            signal = signal + scale^ampexponent*sin(scale*x + off);
+        end
+        im(row,:) = signal;
+        off = off + phaseCycles*pi/Npts;
     end
     
     figure
@@ -65,21 +64,11 @@ function im = step2line(nscales, ampexponent, Npts, nCycles, phaseCycles)
     imagesc(im), axis('off') , title('step to line feature interpolation');
     
     range = 3.2;
-    s = 'Profiles having phase congruency at 0/180, 30/210, 60/240 and 90/270 degrees';    
+    s = 'Profiles having phase congruency at 0/180, 30/210, 60/240 and 90/270 degrees';
 
-    if Octave
-	plot(im(1,:)) , title(s), axis([0,Npts,-range,range]), axis('off'); hold('on')
-	plot(im(fix(Npts/3),:)), axis([0,Npts,-range,range]), axis('off');
-	plot(im(fix(2*Npts/3),:)), axis([0,Npts,-range,range]), axis('off');
-	plot(im(Npts,:)), axis([0,Npts,-range,range]), axis('off');     
-	hold('off')
+    figure
+    subplot(4,1,1), plot(im(1,:)) , title(s), axis([0,Npts,-range,range]), axis('off');
+    subplot(4,1,2), plot(im(fix(Npts/3),:)), axis([0,Npts,-range,range]), axis('off');
+    subplot(4,1,3), plot(im(fix(2*Npts/3),:)), axis([0,Npts,-range,range]), axis('off');
+    subplot(4,1,4), plot(im(Npts,:)), axis([0,Npts,-range,range]), axis('off');
 
-    else   % MATLAB plotting
-	figure
-	subplot(4,1,1), plot(im(1,:)) , title(s), axis([0,Npts,-range,range]), axis('off');
-	subplot(4,1,2), plot(im(fix(Npts/3),:)), axis([0,Npts,-range,range]), axis('off');
-	subplot(4,1,3), plot(im(fix(2*Npts/3),:)), axis([0,Npts,-range,range]), axis('off');
-	subplot(4,1,4), plot(im(Npts,:)), axis([0,Npts,-range,range]), axis('off');
-    end
-    
-	
