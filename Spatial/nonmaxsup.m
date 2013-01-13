@@ -71,7 +71,7 @@ if radius < 1
   error('radius must be >= 1');
 end
 
-Octave = exist('OCTAVE_VERSION') ~= 0;  % Are we running under Octave?
+Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
 
 [rows,cols] = size(inimage);
 im = zeros(rows,cols);        % Preallocate memory for output image

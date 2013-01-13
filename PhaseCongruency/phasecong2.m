@@ -133,7 +133,7 @@ function [M, m, or, featType, PC, EO]=phasecong2(varargin)
 [im, nscale, norient, minWaveLength, mult, sigmaOnf, ...
                   dThetaOnSigma,k, cutOff, g] = checkargs(varargin(:));     
 
-Octave = exist('OCTAVE_VERSION') ~= 0;  % Are we running under Octave?
+Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
 
 epsilon         = .0001;                % Used to prevent division by zero.
 

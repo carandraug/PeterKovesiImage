@@ -43,7 +43,7 @@
 function [F,e1,e2] = fundmatrix(varargin)
     
     [x1, x2, npts] = checkargs(varargin(:));
-    Octave = exist('OCTAVE_VERSION') ~= 0;  % Are we running under Octave?    
+    Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
     
     % Normalise each set of points so that the origin 
     % is at centroid and mean distance from origin is sqrt(2). 

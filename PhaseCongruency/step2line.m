@@ -40,7 +40,7 @@
 
 function im = step2line(nscales, ampexponent, Npts, nCycles, phaseCycles)
     
-    Octave = exist('OCTAVE_VERSION') ~= 0;  % Are we running under Octave?    
+    Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
 
     if ~exist('Npts', 'var'),    Npts = 256;    end
     if ~exist('nCycles', 'var'), nCycles = 1.5; end

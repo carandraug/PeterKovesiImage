@@ -33,7 +33,7 @@
 
 function [z,s,t] = testp(noise)
 
-    Octave = exist('OCTAVE_VERSION') ~= 0;  % Are we running under Octave?    
+    Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
 
     if nargin == 0
 	noise = 0;

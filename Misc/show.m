@@ -54,7 +54,7 @@
 
 function h = show(im, param2, param3)
 
-    Octave = exist('OCTAVE_VERSION') ~= 0;  % Are we running under Octave?    
+    Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
     
     if ~Octave
 	s = warning('query','all'); % Record existing warning state.

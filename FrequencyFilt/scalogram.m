@@ -48,7 +48,7 @@
 function [amplitude, phase] = scalogram(signal, minwavelength, mult, ...
 					nscales, sigmaOnf, threeD)
 
-    Octave = exist('OCTAVE_VERSION') ~= 0; % Are we running under Octave
+    Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
     
 % Check the input data
 

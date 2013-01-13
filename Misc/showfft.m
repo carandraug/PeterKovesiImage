@@ -30,7 +30,7 @@
 
 function showfft(im, figNo)
 
-    Octave = exist('OCTAVE_VERSION') ~= 0;  % Are we running under Octave?    
+    Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
     Title = inputname(1);      % Get variable name of image data    
         
     if nargin == 2

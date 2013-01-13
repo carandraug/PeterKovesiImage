@@ -113,7 +113,7 @@
 function [M, inliers] = ransac(x, fittingfn, distfn, degenfn, s, t, feedback, ...
                                maxDataTrials, maxTrials)
 
-    Octave = exist('OCTAVE_VERSION') ~= 0;
+    Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
 
     % Test number of parameters
     error ( nargchk ( 6, 9, nargin ) );
