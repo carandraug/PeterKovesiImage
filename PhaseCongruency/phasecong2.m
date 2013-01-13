@@ -129,11 +129,9 @@
 
 function [M, m, or, featType, PC, EO]=phasecong2(varargin)
     
-% Get arguments and/or default values    
+% Get arguments and/or default values
 [im, nscale, norient, minWaveLength, mult, sigmaOnf, ...
-                  dThetaOnSigma,k, cutOff, g] = checkargs(varargin(:));     
-
-Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
+                  dThetaOnSigma,k, cutOff, g] = checkargs(varargin(:));
 
 epsilon         = .0001;                % Used to prevent division by zero.
 
@@ -149,7 +147,7 @@ totalEnergy = zero;               % Total weighted phase congruency values (ener
 totalSumAn  = zero;               % Total filter response amplitude values.
 orientation = zero;               % Matrix storing orientation with greatest
                                   % energy for each pixel.
-EO = cell(nscale, norient);       % Array of convolution results.                                 
+EO = cell(nscale, norient);       % Array of convolution results.
 covx2 = zero;                     % Matrices for covariance data
 covy2 = zero;
 covxy = zero;
@@ -165,13 +163,13 @@ ifftFilterArray = cell(1,nscale); % Array of inverse FFTs of filters
 if mod(cols,2)
     xrange = [-(cols-1)/2:(cols-1)/2]/(cols-1);
 else
-    xrange = [-cols/2:(cols/2-1)]/cols; 
+    xrange = [-cols/2:(cols/2-1)]/cols;
 end
 
 if mod(rows,2)
     yrange = [-(rows-1)/2:(rows-1)/2]/(rows-1);
 else
-    yrange = [-rows/2:(rows/2-1)]/rows; 
+    yrange = [-rows/2:(rows/2-1)]/rows;
 end
 
 [x,y] = meshgrid(xrange, yrange);
@@ -185,7 +183,7 @@ radius = ifftshift(radius);       % Quadrant shift radius and theta so that filt
 theta  = ifftshift(theta);        % are constructed with 0 frequency at the corners.
 radius(1,1) = 1;                  % Get rid of the 0 radius value at the 0
                                   % frequency point (now at top-left corner)
-                                  % so that taking the log of the radius will 
+                                  % so that taking the log of the radius will
                                   % not cause trouble.
 
 sintheta = sin(theta);
@@ -213,7 +211,7 @@ logGabor = cell(1,nscale);
 for s = 1:nscale
     wavelength = minWaveLength*mult^(s-1);
     fo = 1.0/wavelength;                  % Centre frequency of filter.
-    logGabor{s} = exp((-(log(radius/fo)).^2) / (2 * log(sigmaOnf)^2));  
+    logGabor{s} = exp((-(log(radius/fo)).^2) / (2 * log(sigmaOnf)^2));
     logGabor{s} = logGabor{s}.*lp;        % Apply low-pass filter
     logGabor{s}(1,1) = 0;                 % Set the value at the 0 frequency point of the filter
                                           % back to zero (undo the radius fudge).
@@ -242,26 +240,25 @@ end
 
 for o = 1:norient                    % For each orientation.
 %  fprintf('Processing orientation %d\r',o);
-%  if Octave fflush(1); end
 
   angl = (o-1)*pi/norient;           % Filter angle.
   sumE_ThisOrient   = zero;          % Initialize accumulator matrices.
-  sumO_ThisOrient   = zero;       
-  sumAn_ThisOrient  = zero;      
-  Energy            = zero;      
+  sumO_ThisOrient   = zero;
+  sumAn_ThisOrient  = zero;
+  Energy            = zero;
 
   for s = 1:nscale,                  % For each scale.
     filter = logGabor{s} .* spread{o};   % Multiply radial and angular
-                                         % components to get the filter. 
+                                         % components to get the filter.
 
-%    if o == 1   % accumulate filter info for noise compensation (nominally the same 
+%    if o == 1   % accumulate filter info for noise compensation (nominally the same
                  % for all orientations, hence it is only done once)
         ifftFilt = real(ifft2(filter))*sqrt(rows*cols);  % Note rescaling to match power
         ifftFilterArray{s} = ifftFilt;                   % record ifft2 of filter
 %    end
 
     % Convolve image with even and odd filters returning the result in EO
-    EO{s,o} = ifft2(imagefft .* filter);      
+    EO{s,o} = ifft2(imagefft .* filter);
 
     An = abs(EO{s,o});                         % Amplitude of even & odd filter response.
     sumAn_ThisOrient = sumAn_ThisOrient + An;  % Sum of amplitude responses.
@@ -280,16 +277,16 @@ for o = 1:norient                    % For each orientation.
   % Get weighted mean filter response vector, this gives the weighted mean
   % phase angle.
 
-  XEnergy = sqrt(sumE_ThisOrient.^2 + sumO_ThisOrient.^2) + epsilon;   
-  MeanE = sumE_ThisOrient ./ XEnergy; 
-  MeanO = sumO_ThisOrient ./ XEnergy; 
+  XEnergy = sqrt(sumE_ThisOrient.^2 + sumO_ThisOrient.^2) + epsilon;
+  MeanE = sumE_ThisOrient ./ XEnergy;
+  MeanO = sumO_ThisOrient ./ XEnergy;
 
   % Now calculate An(cos(phase_deviation) - | sin(phase_deviation)) | by
   % using dot and cross products between the weighted mean filter response
   % vector and the individual filter response vectors at each scale.  This
   % quantity is phase congruency multiplied by An, which we call energy.
 
-  for s = 1:nscale,       
+  for s = 1:nscale,
       E = real(EO{s,o}); O = imag(EO{s,o});    % Extract even and odd
                                                % convolution results.
       Energy = Energy + E.*MeanE + O.*MeanO - abs(E.*MeanO - O.*MeanE);
@@ -337,12 +334,12 @@ for o = 1:norient                    % For each orientation.
 
   T =  EstNoiseEnergy + k*EstNoiseEnergySigma;       % Noise threshold
 
-  % The estimated noise effect calculated above is only valid for the PC_1 measure. 
+  % The estimated noise effect calculated above is only valid for the PC_1 measure.
   % The PC_2 measure does not lend itself readily to the same analysis.  However
-  % empirically it seems that the noise effect is overestimated roughly by a factor 
+  % empirically it seems that the noise effect is overestimated roughly by a factor
   % of 1.7 for the filter parameters used here.
 
-  T = T/1.7;        % Empirical rescaling of the estimated noise effect to 
+  T = T/1.7;        % Empirical rescaling of the estimated noise effect to
                     % suit the PC_2 phase congruency measure
 
   Energy = max(Energy - T, zero);          % Apply noise threshold
@@ -352,11 +349,11 @@ for o = 1:norient                    % For each orientation.
   % present by taking the sum of the filter response amplitudes and dividing
   % by the maximum amplitude at each point on the image.
 
-  width = sumAn_ThisOrient ./ (maxAn + epsilon) / nscale;    
+  width = sumAn_ThisOrient ./ (maxAn + epsilon) / nscale;
 
   % Now calculate the sigmoidal weighting function for this orientation.
 
-  weight = 1.0 ./ (1 + exp( (cutOff - width)*g)); 
+  weight = 1.0 ./ (1 + exp( (cutOff - width)*g));
 
   % Apply weighting to energy and then calculate phase congruency
 
@@ -393,7 +390,7 @@ cos2theta = (covx2-covy2)./denom;
 or = atan2(sin2theta,cos2theta)/2;    % Orientation perpendicular to edge.
 or = round(or*180/pi);                % Return result rounded to integer
                                       % degrees.
-neg = or < 0;                                 
+neg = or < 0;
 or = ~neg.*or + neg.*(or+180);        % Adjust range from -90 to 90
                                       % to 0 to 180.
 
@@ -403,45 +400,44 @@ m = (covy2+covx2 - denom)/2;          % ... and minimum moment
 
 
 
-    
 %------------------------------------------------------------------
 % CHECKARGS
 %
 % Function to process the arguments that have been supplied, assign
 % default values as needed and perform basic checks.
-    
+
 function [im, nscale, norient, minWaveLength, mult, sigmaOnf, ...
-          dThetaOnSigma,k, cutOff, g] = checkargs(arg); 
+          dThetaOnSigma,k, cutOff, g] = checkargs(arg);
 
     nargs = length(arg);
     
     if nargs < 1
         error('No image supplied as an argument');
-    end    
+    end
     
     % Set up default values for all arguments and then overwrite them
     % with with any new values that may be supplied
     im              = [];
-    nscale          = 4;     % Number of wavelet scales.    
+    nscale          = 4;     % Number of wavelet scales.
     norient         = 6;     % Number of filter orientations.
-    minWaveLength   = 3;     % Wavelength of smallest scale filter.    
-    mult            = 2.1;   % Scaling factor between successive filters.    
+    minWaveLength   = 3;     % Wavelength of smallest scale filter.
+    mult            = 2.1;   % Scaling factor between successive filters.
     sigmaOnf        = 0.55;  % Ratio of the standard deviation of the
                              % Gaussian describing the log Gabor filter's
                              % transfer function in the frequency domain
-                             % to the filter center frequency.    
-    dThetaOnSigma   = 1.5;   % Ratio of angular interval between filter orientations    
+                             % to the filter center frequency.
+    dThetaOnSigma   = 1.5;   % Ratio of angular interval between filter orientations
                              % and the standard deviation of the angular Gaussian
                              % function used to construct filters in the
                              % freq. plane.
     k               = 2.0;   % No of standard deviations of the noise
                              % energy beyond the mean at which we set the
-                             % noise threshold point. 
+                             % noise threshold point.
     cutOff          = 0.5;   % The fractional measure of frequency spread
                              % below which phase congruency values get penalized.
     g               = 10;    % Controls the sharpness of the transition in
                              % the sigmoid function used to weight phase
-                             % congruency for frequency spread.                      
+                             % congruency for frequency spread.
     
     % Allowed argument reading states
     allnumeric   = 1;       % Numeric argument values in predefined order
@@ -455,16 +451,16 @@ function [im, nscale, norient, minWaveLength, mult, sigmaOnf, ...
                 readstate = keywordvalue;
                 break;
             else
-                if     n == 1, im            = arg{n}; 
-                elseif n == 2, nscale        = arg{n};              
+                if     n == 1, im            = arg{n};
+                elseif n == 2, nscale        = arg{n};
                 elseif n == 3, norient       = arg{n};
                 elseif n == 4, minWaveLength = arg{n};
                 elseif n == 5, mult          = arg{n};
                 elseif n == 6, sigmaOnf      = arg{n};
                 elseif n == 7, dThetaOnSigma = arg{n};
-                elseif n == 8, k             = arg{n};              
-                elseif n == 9, cutOff        = arg{n}; 
-                elseif n == 10,g             = arg{n};                                                    
+                elseif n == 8, k             = arg{n};
+                elseif n == 9, cutOff        = arg{n};
+                elseif n == 10,g             = arg{n};
                 end
             end
         end
@@ -474,7 +470,7 @@ function [im, nscale, norient, minWaveLength, mult, sigmaOnf, ...
     if readstate == keywordvalue
         while n < nargs
             
-            if ~isa(arg{n},'char') | ~isa(arg{n+1}, 'double')
+            if ~isa(arg{n},'char') || ~isa(arg{n+1}, 'double')
                 error('There should be a parameter name - value pair');
             end
             
@@ -487,7 +483,7 @@ function [im, nscale, norient, minWaveLength, mult, sigmaOnf, ...
             elseif strncmpi(arg{n},'dThetaOnSigma',2), dThetaOnSigma =  arg{n+1};
             elseif strncmpi(arg{n},'k'       ,1), k =         arg{n+1};
             elseif strncmpi(arg{n},'cutOff'  ,2), cutOff   =  arg{n+1};
-            elseif strncmpi(arg{n},'g'       ,1), g        =  arg{n+1};         
+            elseif strncmpi(arg{n},'g'       ,1), g        =  arg{n+1};
             else   error('Unrecognised parameter name');
             end
 
@@ -511,20 +507,15 @@ function [im, nscale, norient, minWaveLength, mult, sigmaOnf, ...
         error('nscale must be an integer >= 1');
     end
     
-    if norient < 1 
+    if norient < 1
         error('norient must be an integer >= 1');
-    end    
+    end
 
     if minWaveLength < 2
         error('It makes little sense to have a wavelength < 2');
-    end          
+    end
 
-    if cutOff < 0 | cutOff > 1
+    if cutOff < 0 || cutOff > 1
         error('Cut off value must be between 0 and 1');
     end
-    
-
-    
-
-
 
