@@ -113,23 +113,21 @@
 function [M, inliers] = ransac(x, fittingfn, distfn, degenfn, s, t, feedback, ...
                                maxDataTrials, maxTrials)
 
-    Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
-
     % Test number of parameters
     error ( nargchk ( 6, 9, nargin ) );
     
-    if nargin < 9; maxTrials = 1000;    end; 
-    if nargin < 8; maxDataTrials = 100; end; 
+    if nargin < 9; maxTrials = 1000;    end;
+    if nargin < 8; maxDataTrials = 100; end;
     if nargin < 7; feedback = 0;        end;
     
-    [rows, npts] = size(x);                 
+    [rows, npts] = size(x);
     
     p = 0.99;         % Desired probability of choosing at least one sample
                       % free from outliers
 
     bestM = NaN;      % Sentinel value allowing detection of solution failure.
     trialcount = 0;
-    bestscore =  0;    
+    bestscore =  0;
     N = 1;            % Dummy initialisation for number of trials.
     
     while N > trialcount
@@ -141,18 +139,18 @@ function [M, inliers] = ransac(x, fittingfn, distfn, degenfn, s, t, feedback, ..
         count = 1;
         while degenerate
             % Generate s random indicies in the range 1..npts
-            % (If you do not have the statistics toolbox, or are using Octave,
+            % (If you do not have the statistics toolbox with randsample(),
             % use the function RANDOMSAMPLE from my webpage)
-	    if Octave | ~exist('randsample.m')
-		ind = randomsample(npts, s);
-	    else
-		ind = randsample(npts, s);
-	    end
+            if ~exist('randsample', 'file')
+                ind = randomsample(npts, s);
+            else
+                ind = randsample(npts, s);
+            end
 
             % Test that these points are not a degenerate configuration.
             degenerate = feval(degenfn, x(:,ind));
             
-            if ~degenerate 
+            if ~degenerate
                 % Fit model to this random selection of data points.
                 % Note that M may represent a set of models that fit the data in
                 % this case M will be a cell array of models
@@ -175,7 +173,7 @@ function [M, inliers] = ransac(x, fittingfn, distfn, degenfn, s, t, feedback, ..
             end
         end
         
-        % Once we are out here we should have some kind of model...        
+        % Once we are out here we should have some kind of model...
         % Evaluate distances between points and model returning the indices
         % of elements in x that are inliers.  Additionally, if M is a cell
         % array of possible models 'distfn' will return the model that has
@@ -191,7 +189,7 @@ function [M, inliers] = ransac(x, fittingfn, distfn, degenfn, s, t, feedback, ..
             bestinliers = inliers;
             bestM = M;
             
-            % Update estimate of N, the number of trials to ensure we pick, 
+            % Update estimate of N, the number of trials to ensure we pick,
             % with probability p, a data set with no outliers.
             fracinliers =  ninliers/npts;
             pNoOutliers = 1 -  fracinliers^s;
@@ -211,14 +209,14 @@ function [M, inliers] = ransac(x, fittingfn, distfn, degenfn, s, t, feedback, ..
             sprintf('ransac reached the maximum number of %d trials',...
                     maxTrials));
             break
-        end     
+        end
     end
     fprintf('\n');
     
-    if ~isnan(bestM)   % We got a solution 
+    if ~isnan(bestM)   % We got a solution
         M = bestM;
         inliers = bestinliers;
-    else           
+    else
         M = [];
         inliers = [];
         error('ransac was unable to find a useful solution');
