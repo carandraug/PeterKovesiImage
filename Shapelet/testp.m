@@ -30,13 +30,12 @@
 % July      2003  - Original version
 % August    2005  - Changes to accommodate Octave
 % September 2008  - Needle plot reinstated for Octave
+% January   2013  - Octave compatibility (random() is part of statistics package)
 
 function [z,s,t] = testp(noise)
 
-    Octave = exist('OCTAVE_VERSION', 'builtin') == 5; % Are we running under Octave
-
     if nargin == 0
-	noise = 0;
+        noise = 0;
     end
     
     p1 = [zeros(1,15) [0:.2:10] zeros(1,15)];
@@ -46,9 +45,9 @@ function [z,s,t] = testp(noise)
     p3 = p3(1:length(p1));
     
     z = [ones(15,1)*p2
-	 ones(15,1)*p1
-	 ones(15,1)*p3
-	 ones(15,1)*p2];
+         ones(15,1)*p1
+         ones(15,1)*p3
+         ones(15,1)*p2];
     
     
     figure(1); clf;% surfl(z), shading interp; colormap(copper);
@@ -60,18 +59,12 @@ function [z,s,t] = testp(noise)
     [rows,cols] = size(s);
 
     if noise
-	if Octave
-	    t = t + noise*randn(rows,cols);
-	    s = s + noise*randn(rows,cols);	   
-	else
-	    t = t + random('Normal',0,noise,rows,cols);  % add noise to tilt
-	    s = s + random('Normal',0,noise,rows,cols);  % ... and slant
-	end
-	% constrain noisy slant values to 0-pi
-	s = max(s, 0);
-	s = min(s, pi/2-0.05);  % -0.05 to avoid infinite gradient
+        t = t + random('Normal',0,noise,rows,cols);  % add noise to tilt
+        s = s + random('Normal',0,noise,rows,cols);  % ... and slant
+        % constrain noisy slant values to 0-pi
+        s = max(s, 0);
+        s = min(s, pi/2-0.05);  % -0.05 to avoid infinite gradient
     end
     
     figure(2),needleplotst(s,t,5,2), axis('off')
-    
-    
+
