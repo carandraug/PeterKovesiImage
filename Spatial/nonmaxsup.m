@@ -137,20 +137,19 @@ for row = (iradius+1):(rows - iradius)
     if inimage(row,col) > v2            % This is a local maximum.
       im(row, col) = inimage(row, col); % Record value in the output
                                         % image.
-					
 
-      % Code for sub-pixel localization if it was requested					
+      % Code for sub-pixel localization if it was requested
       if nargout == 2
-         % Solve for coefficients of parabola that passes through 
-	 % [-1, v1]  [0, inimage] and [1, v2]. 
-	 % v = a*r^2 + b*r + c
-	 c = inimage(row,col);
-	 a = (v1 + v2)/2 - c;
-	 b = a + c - v1;
-	 
-	 % location where maxima of fitted parabola occurs
-	 r = -b/(2*a);
-	 location(row,col) = complex(row + r*yoff(or), col - r*xoff(or));      
+        % Solve for coefficients of parabola that passes through 
+        % [-1, v1]  [0, inimage] and [1, v2]. 
+        % v = a*r^2 + b*r + c
+        c = inimage(row,col);
+        a = (v1 + v2)/2 - c;
+        b = a + c - v1;
+        
+        % location where maxima of fitted parabola occurs
+        r = -b/(2*a);
+        location(row,col) = complex(row + r*yoff(or), col - r*xoff(or));
       end
       
     end
@@ -168,9 +167,7 @@ end
 % value > 1.
 
 if Octave
-    skel = bwmorph(im>0,'thin',Inf);   % Octave bwmorph only works on binary
-                                       % images and 'thin' seems to produce
-                                       % better results.
+    skel = bwmorph(im,'thin',Inf);   % Octave's 'thin' seems to produce better results.
 else
     skel = bwmorph(im,'skel',Inf);
 end
