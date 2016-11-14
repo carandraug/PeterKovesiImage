@@ -69,6 +69,13 @@
 %     inliers   - An array of indices of the elements of x that were
 %                 the inliers for the best model.
 %
+% If no solution could be found M and inliers are both returned as empty
+% matrices and a warning reported.
+%
+% Note that the desired probability of choosing at least one sample free from
+% outliers is set at 0.99.  You will need to edit the code should you wish to
+% change this (it should probably be a parameter)
+%
 % For an example of the use of this function see RANSACFITHOMOGRAPHY or
 % RANSACFITPLANE 
 
@@ -80,10 +87,10 @@
 %    Richard Hartley and Andrew Zisserman. "Multiple View Geometry in
 %    Computer Vision". pp 101-113. Cambridge University Press, 2001
 
-% Copyright (c) 2003-2006 Peter Kovesi
-% School of Computer Science & Software Engineering
+% Copyright (c) 2003-2013 Peter Kovesi
+% Centre for Exploration Targeting
 % The University of Western Australia
-% pk at csse uwa edu au    
+% peter.kovesi at uwa edu au    
 % http://www.csse.uwa.edu.au/~pk
 % 
 % Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -109,6 +116,7 @@
 %                 breaks in code introduced in last update fixed.
 % December 2008 - Octave compatibility mods
 % June     2009 - Argument 'MaxTrials' corrected to 'maxTrials'!
+% January  2013 - Separate code path for Octave no longer needed
 
 function [M, inliers] = ransac(x, fittingfn, distfn, degenfn, s, t, feedback, ...
                                maxDataTrials, maxTrials)
@@ -123,7 +131,7 @@ function [M, inliers] = ransac(x, fittingfn, distfn, degenfn, s, t, feedback, ..
     [rows, npts] = size(x);
     
     p = 0.99;         % Desired probability of choosing at least one sample
-                      % free from outliers
+                      % free from outliers (probably should be a parameter)
 
     bestM = NaN;      % Sentinel value allowing detection of solution failure.
     trialcount = 0;
@@ -211,7 +219,8 @@ function [M, inliers] = ransac(x, fittingfn, distfn, degenfn, s, t, feedback, ..
             break
         end
     end
-    fprintf('\n');
+    
+    if feedback, fprintf('\n'); end
     
     if ~isnan(bestM)   % We got a solution
         M = bestM;
@@ -219,6 +228,6 @@ function [M, inliers] = ransac(x, fittingfn, distfn, degenfn, s, t, feedback, ..
     else
         M = [];
         inliers = [];
-        error('ransac was unable to find a useful solution');
+        warning('ransac was unable to find a useful solution');
     end
     

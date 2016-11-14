@@ -16,7 +16,7 @@
 
 function Q = newquaternion(theta, axis)
     
-    axis = axis./norm(axis);
+    axis = axis(:)/norm(axis(:));
     Q = zeros(4,1);    
     Q(1) = cos(theta/2);
     Q(2:4) = sin(theta/2)*axis;

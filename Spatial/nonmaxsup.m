@@ -42,10 +42,9 @@
 % intensity values at ideal, real-valued pixel locations on each side of
 % pixels to determine if they are local maxima.
 
-% Copyright (c) 1996-2005 Peter Kovesi
-% School of Computer Science & Software Engineering
+% Copyright (c) 1996-2013 Peter Kovesi
+% Centre for Exploration Targeting
 % The University of Western Australia
-% http://www.csse.uwa.edu.au/
 % 
 % Permission is hereby granted, free of charge, to any person obtaining a copy
 % of this software and associated documentation files (the "Software"), to deal
@@ -59,6 +58,8 @@
 % December  1996 - Original version
 % September 2004 - Subpixel localization added
 % August    2005 - Made Octave compatible
+% October   2013 - Final thinning applied to binary image for Octave
+%                  compatbility (Thanks to Chris Pudney)
 
 
 function [im, location] = nonmaxsup(inimage, orient, radius)
@@ -167,9 +168,9 @@ end
 % value > 1.
 
 if Octave
-    skel = bwmorph(im,'thin',Inf);   % Octave's 'thin' seems to produce better results.
+    skel = bwmorph(im>0,'thin',Inf);   % Octave's 'thin' seems to produce better results.
 else
-    skel = bwmorph(im,'skel',Inf);
+    skel = bwmorph(im>0,'skel',Inf);
 end
 im = im.*skel;
 if nargout == 2

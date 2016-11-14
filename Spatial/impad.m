@@ -27,7 +27,11 @@ function pim = impad(im, b, v)
     if nargin == 3
         pim = v*ones(rows+2*b, cols+2*b, channels, class(im));
     else
-        pim = zeros(rows+2*b, cols+2*b, channels, class(im));
+        if islogical(im)
+            pim = logical(zeros(rows+2*b, cols+2*b, channels, 'uint8'));
+        else
+            pim = zeros(rows+2*b, cols+2*b, channels, class(im));
+        end
     end
     
     pim(1+b:rows+b, 1+b:cols+b, 1:channels) = im;

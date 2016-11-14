@@ -70,14 +70,14 @@
 % Notes on specifying parameters:  
 %
 % The parameters can be specified as a full list eg.
-%  >> [M m or ft pc EO] = phasecong2(im, 5, 6, 3, 2.5, 0.55, 2.0, 0.4, 10);
+%  >> [M m or ft pc EO] = phasecong3(im, 5, 6, 3, 2.5, 0.55, 2.0, 0.4, 10);
 %
 % or as a partial list with unspecified parameters taking on default values
-%  >> [M m or ft pc EO] = phasecong2(im, 5, 6, 3);
+%  >> [M m or ft pc EO] = phasecong3(im, 5, 6, 3);
 %
 % or as a partial list of parameters followed by some parameters specified via a
 % keyword-value pair, remaining parameters are set to defaults, for example:
-%  >> [M m or ft pc EO] = phasecong2(im, 5, 6, 3, 'cutOff', 0.3, 'k', 2.5);
+%  >> [M m or ft pc EO] = phasecong3(im, 5, 6, 3, 'cutOff', 0.3, 'k', 2.5);
 % 
 % The convolutions are done via the FFT.  Many of the parameters relate to the
 % specification of the filters in the frequency plane.  The values do not seem
@@ -218,7 +218,6 @@ function [M, m, or, featType, PC, EO, T, pcSum] = phasecong3(varargin)
     end
     
     %% The main loop...
-    
     for o = 1:norient                    % For each orientation...
         % Construct the angular filter spread function
         angl = (o-1)*pi/norient;           % Filter angle.
@@ -384,6 +383,7 @@ function [M, m, or, featType, PC, EO, T, pcSum] = phasecong3(varargin)
     featType = atan2(EnergyV(:,:,1), OddV);  % Feature phase  pi/2 <-> white line,
                                              % 0 <-> step, -pi/2 <-> black line
 
+                                             
 %%------------------------------------------------------------------
 % CHECKARGS
 %
@@ -417,8 +417,8 @@ function [im, nscale, norient, minWaveLength, mult, sigmaOnf, ...
                              % below which phase congruency values get penalized.
     g               = 10;    % Controls the sharpness of the transition in
                              % the sigmoid function used to weight phase
-                             % congruency for frequency spread.                      
-    noiseMethod     = -1;    % Choice of noise compensation method.                             
+                             % congruency for frequency spread.  
+    noiseMethod     = -1;    % Choice of noise compensation method. 
     
     % Allowed argument reading states
     allnumeric   = 1;       % Numeric argument values in predefined order
@@ -438,9 +438,9 @@ function [im, nscale, norient, minWaveLength, mult, sigmaOnf, ...
                 elseif n == 4, minWaveLength = arg{n};
                 elseif n == 5, mult          = arg{n};
                 elseif n == 6, sigmaOnf      = arg{n};
-                elseif n == 7, k             = arg{n};              
-                elseif n == 8, cutOff        = arg{n}; 
-                elseif n == 9,g             = arg{n};             
+                elseif n == 7, k             = arg{n};
+                elseif n == 8, cutOff        = arg{n};
+                elseif n == 9, g             = arg{n};
                 elseif n == 10,noiseMethod   = arg{n};
                 end
             end
@@ -480,10 +480,15 @@ function [im, nscale, norient, minWaveLength, mult, sigmaOnf, ...
         error('No image argument supplied');
     end
 
+    if ndims(im) == 3
+        warning('Colour image supplied: converting image to greyscale...')
+        im = double(rgb2gray(im));
+    end
+    
     if ~isa(im, 'double')
         im = double(im);
     end
-    
+
     if nscale < 1
         error('nscale must be an integer >= 1');
     end

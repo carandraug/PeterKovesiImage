@@ -18,14 +18,25 @@
 %    lHistCut    -  Percentage of the lower end of the histogram
 %                   to saturate.
 %    uHistCut    -  Percentage of the upper end of the histogram
-%                   to saturate.
+%                   to saturate.  If omitted or empty defaults to the value
+%                   for lHistCut.
 %    sortv       -  Optional array of sorted image pixel values obtained
 %                   from a previous call to histtruncate.  Supplying this
 %                   data speeds the operation of histtruncate when one is
 %                   repeatedly varying lHistCut and uHistCut.
 %
+% Returns:
+%    newim       -  Image with values clipped at the specified histogram
+%                   fraction values.  If the input image was colour the
+%                   lightness values are clipped and stretched to the range
+%                   0-1.  If the input image is greyscale no stretching is
+%                   applied. You may want to use NORMAALISE to achieve this
+%    sortv       -  Sorted image values for reuse in subsequent calls to
+%                   histruncate.
+%
+% See also: NORMALISE
 
-% Copyright (c) 2001-2012 Peter Kovesi
+% Copyright (c) 2001-2014 Peter Kovesi
 % Centre for Exploration Targeting
 % The University of Western Australia
 % http://www.cet.edu.au/
@@ -39,30 +50,32 @@
 %
 % The Software is provided "as is", without warranty of any kind.
 
-% July     2001 - Original version
-% February 2012 - Added handling of NaN values in image
+% July      2001 - Original version
+% February  2012 - Added handling of NaN values in image
+% February  2014 - Code cleanup
+% September 2014 - Default for uHistCut + cleanup
 
-function [newim, sortv] = histtruncate(im, lHistCut, uHistCut, varargin)
+function [newim, sortv] = histtruncate(im, lHistCut, uHistCut, sortv)
+    
+    if ~exist('uHistCut', 'var') || isempty(uHistCut), uHistCut = lHistCut; end
 
     if lHistCut < 0 | lHistCut > 100 | uHistCut < 0 | uHistCut > 100
 	error('Histogram truncation values must be between 0 and 100');
     end
+    
+    if ~exist('sortv', 'var'), sortv = []; end
 
     if ndims(im) == 3  % Assume colour image in RGB
 	hsv = rgb2hsv(im);     % Convert to HSV 
         % Apply histogram truncation just to intensity component
-	if nargin == 3
-	    [hsv(:,:,3), sortv] = Ihisttruncate(hsv(:,:,3), lHistCut, uHistCut);
-	else
-	    [hsv(:,:,3), sortv] = Ihisttruncate(hsv(:,:,3), lHistCut, uHistCut, varargin{1});
-	end
+        [hsv(:,:,3), sortv] = Ihisttruncate(hsv(:,:,3), lHistCut, uHistCut, sortv);
+
+        % Stretch intensity component to 0-1
+        hsv(:,:,3) = normalise(hsv(:,:,3));
 	newim = hsv2rgb(hsv);  % Convert back to RGB
+    
     else
-	if nargin == 3
-	    [newim, sortv] = Ihisttruncate(im, lHistCut, uHistCut);
-	else
-	    [newim, sortv] = Ihisttruncate(im, lHistCut, uHistCut, varargin{1});
-	end
+        [newim, sortv] = Ihisttruncate(im, lHistCut, uHistCut, sortv);
     end
     
     
@@ -70,32 +83,36 @@ function [newim, sortv] = histtruncate(im, lHistCut, uHistCut, varargin)
 % Internal function that does the work
 %-----------------------------------------------------------------------
     
-function [newim, sortv] = Ihisttruncate(im, lHistCut, uHistCut, varargin)    
+function [im, sortv] = Ihisttruncate(im, lHistCut, uHistCut, sortv)
     
     if ndims(im) > 2
 	error('HISTTRUNCATE only defined for grey value images');
     end
     
-    im = normalise(im);  % Normalise to 0-1 and cast to double if needed
-    
-    mask = ~isnan(im);   % Generate a mask of non NaN regions of the image
-    m = sum(mask(:));    % Number of non NaN elements.
-    
-     % Generate a sorted array of pixel values.
-    if nargin == 3      
-	sortv = sort(im(mask(:)));  
-	sortv = [sortv(1); sortv; sortv(m)];
-    else
-	sortv = varargin{1};
+    % Generate a sorted array of pixel values or use supplied values
+    if isempty(sortv)
+        sortv = sort(im(:));
     end
     
-    x = 100*(0.5:m - 0.5)./m; % Indices of pixel value order as a percentage
-    x = [0 x 100];            % from 0 - 100.
+    % Any NaN values end up at the end of the sorted list. We need to
+    % eliminate these
+    sortv = sortv(~isnan(sortv));
+    N = length(sortv(:));
     
-    % Interpolate to find grey values at desired percentage levels.
-    gv = interp1(x,sortv,[lHistCut, 100 - uHistCut]); 
+    % Compute indicies corresponding to specified upper and lower fractions
+    % of the histogram.
+    lind = floor(1 + N*lHistCut/100);
+    hind =  ceil(N - N*uHistCut/100);
 
-    newim = imadjust(im,gv,[0 1]);
-    newim(~mask) = nan;
+    low_in  = sortv(lind);
+    high_in = sortv(hind);
+
+    % Adjust image
+    im(im < low_in) = low_in;
+    im(im > high_in) = high_in;
+    
+    % Normalise?  normalise with NaNs?
+    
+
     
     

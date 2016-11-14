@@ -82,7 +82,7 @@ function L = defineline(X);
     L = X;
     
 %------------------------------------------------------------------------
-% Function to calculate distances between a line and a an array of points.
+% Function to calculate distances between a line and an array of points.
 % The line is defined by a 3x2 matrix, L.  The two columns of L defining
 % two points that are the endpoints of the line.
 %

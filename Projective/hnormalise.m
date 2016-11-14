@@ -27,9 +27,9 @@ function nx = hnormalise(x)
     % Find the indices of the points that are not at infinity
     finiteind = find(abs(x(rows,:)) > eps);
 
-    if length(finiteind) ~= npts
-        warning('Some points are at infinity');
-    end
+%    if length(finiteind) ~= npts
+%        warning('Some points are at infinity');
+%    end
 
     % Normalise points not at infinity
     for r = 1:rows-1

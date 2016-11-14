@@ -85,14 +85,13 @@ function [orientim, reliability, coherence] = ...
     end
     
     orientim = pi/2 + atan2(sin2theta,cos2theta)/2;
-
-    % Calculate 'reliability' of orientation data.  Here we calculate the
-    % area moment of inertia about the orientation axis found (this will
-    % be the minimum inertia) and an axis  perpendicular (which will be
-    % the maximum inertia).  The reliability measure is given by
-    % 1.0-min_inertia/max_inertia.  The reasoning being that if the ratio
-    % of the minimum to maximum inertia is close to one we have little
-    % orientation information. 
+    
+    % Calculate 'reliability' of orientation data.  Here we calculate the area
+    % moment about the orientation axis found (this will be the minimum moment)
+    % and an axis perpendicular (which will be the maximum moment).  The
+    % reliability measure is given by 1.0-min_moment/max_moment.  The reasoning
+    % being that if the ratio of the minimum to maximum moments is close to one
+    % we have little orientation information.
     
     Imin = (Gyy+Gxx)/2 - (Gxx-Gyy).*cos2theta/2 - Gxy.*sin2theta/2;
     Imax = Gyy+Gxx - Imin;

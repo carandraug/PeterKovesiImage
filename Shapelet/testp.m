@@ -30,7 +30,8 @@
 % July      2003  - Original version
 % August    2005  - Changes to accommodate Octave
 % September 2008  - Needle plot reinstated for Octave
-% January   2013  - Octave compatibility (random() is part of statistics package)
+% January   2013  - Separate code path for Octave no longer needed (random()
+%                   is part of statistics package) 
 
 function [z,s,t] = testp(noise)
 

@@ -14,8 +14,8 @@ viable alternative.  Octave runs under Linux, Windows and Mac OS X.
 
 <p> With the release of Octave 3 many of the remaining
 incompatibilities between Octave and MATLAB have been eliminated and
-the graphics much improved.  Plotting and image display is not as fast
-or as polished as it is under MATLAB but you can do pretty well
+the graphics much improved.  Plotting and image display may not be as
+fast or as polished as it is under MATLAB but you can do pretty well
 everything you want to.  Most of your MATLAB code will run under
 Octave with no modifications required.
 
@@ -58,6 +58,8 @@ pages.
 
 <h3>A few gotchas to look out for</h3>
 
+<p>This list of gotchas is diminishing all the time and very few remain...
+
 <ul>
 <li>Display of colour images can be washed out.  This seems to be
 caused by the rgb colormap having only 64 entries.  If I create a 256
@@ -78,12 +80,17 @@ lose a dimension in the decomposed matrices.
 
 <h3>Notes on code modifications to provide Octave compatibility</h3>
 
-In a few cases I have had to create slightly different execution paths
-for Octave and MATLAB.  To detect whether the code is running under
-Octave I am using the following test (thanks to Rosen Diankov for this).
+In general very few modifications have been needed, indeed recently I
+have been able to remove many of the Octave specific modifications.  I
+would like to thank Carn&euml; Draug for checking over, and improving,
+the Octave compatibility of many of the functions.  In a few cases I
+have had to create slightly different execution paths for Octave and
+MATLAB.  To detect whether the code is running under Octave I am using
+the following test (thanks to Rosen Diankov and subsequent improvement
+by Carn&euml; Draug for this).
 
 <pre>
-  Octave = exist('OCTAVE_VERSION', 'builtin');
+  Octave = exist('OCTAVE_VERSION', 'builtin') == 5;
 </pre>
 
 <p>

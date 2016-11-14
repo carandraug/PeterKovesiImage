@@ -2,9 +2,12 @@
 %
 % Usage: t = matrix2angleaxis(T)
 %
-% Argument:   T - 4x4 Homogeneous transformation matrix
-% Returns:    t - 3-vector giving rotation axis with magnitude equal to the
-%                 rotation angle in radians.
+% Argument:   T - 4x4 Homogeneous transformation matrix, or 3x3 rotation matrix.
+% Returns:    t - 3x1 column vector giving rotation axis with magnitude equal
+%                 to the rotation angle in radians.
+%
+% Note that only the top left 3x3 rotation component of T is used, any
+% translation component in T is ignored.
 %
 % See also: ANGLEAXIS2MATRIX, ANGLEAXIS2MATRIX2, ANGLEAXISROTATE, NEWANGLEAXIS, 
 %           NORMALISEANGLEAXIS
@@ -24,19 +27,29 @@
 %
 % The Software is provided "as is", without warranty of any kind.
 
+%     2008  - Original version
+% May 2013  - Code to trap small rotations added
+
 function t = matrix2angleaxis(T)
 
-    % This code follows the implementation suggested by Hartley and Zisserman    
+    % This code follows the implementation suggested by Hartley and Zisserman
     R = T(1:3, 1:3);   % Extract rotation part of T
     
-    % Find rotation axis as the eigenvector having unit eigenvalue
+    % Trap case where rotation is very small.  (See angleaxis2matrix.m)
+    Reye = R-eye(3);
+    if norm(Reye) < 1e-8
+        t = [T(3,2); T(1,3); T(2,1)];
+        return
+    end
+
+    % Otherwise find rotation axis as the eigenvector having unit eigenvalue
     % Solve (R-I)v = 0;
-    [v,d] = eig(R-eye(3));
+    [v,d] = eig(Reye);
     
     % The following code assumes the eigenvalues returned are not necessarily
     % sorted by size. This may be overcautious on my part.
-    d = diag(abs(d));   % Extract eigenvalues
-    [s, ind] = sort(d); % Find index of smallest one
+    d = diag(abs(d));      % Extract eigenvalues
+    [s, ind] = sort(d);    % Find index of smallest one
     if d(ind(1)) > 0.001   % Hopefully it is close to 0
         warning('Rotation matrix is dubious');
     end

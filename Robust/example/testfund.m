@@ -3,8 +3,9 @@
 % (mostly) inlying matches
 %
 % Usage:  testfund              - Demonstrates fundamental matrix calculation
-%                                 on two default images
-%         testfund(im1,im2)     - Computes fundamental matrix on two supplied images
+%                                 on two default images.
+%         testfund(im1,im2)     - Computes fundamental matrix on two supplied
+%                                 images.
 %
 % Edit code as necessary to tweak parameters
 
@@ -24,6 +25,9 @@
 
 % February 2004
 % August   2005 Octave compatibility
+% July     2013 Adust threshold to suit use of Farid and Simoncelli's
+%               derivative filters now used in harris.m
+% June     2016 Changed to suit new calling method for harris.m
 
 function testfund(im1,im2)
     
@@ -33,16 +37,15 @@ function testfund(im1,im2)
     end
 
     v = version; Octave=v(1)<'5';  % Crude Octave test        
-    thresh = 500;   % Harris corner threshold
     nonmaxrad = 3;  % Non-maximal suppression radius
     dmax = 50;      % Maximum search distance for matching
     w = 11;         % Window size for correlation matching
     
-    % Find Harris corners in image1 and image2
-    [cim1, r1, c1] = harris(im1, 1, thresh, 3);
+    % Find 100 strongest Harris corners in image1 and image2
+    [cim1, r1, c1] = harris(im1, 1, 0.04, 'N', 100, 'radius', nonmaxrad);
     show(im1,1), hold on, plot(c1,r1,'r+');
 
-    [cim2, r2, c2] = harris(im2, 1, thresh, 3);
+    [cim2, r2, c2] = harris(im2, 1, 0.04, 'N', 100, 'radius', nonmaxrad);
     show(im2,2), hold on, plot(c2,r2,'r+');
     drawnow
 

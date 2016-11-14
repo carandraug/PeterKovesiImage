@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <title>Peter's Functions for Computer Vision</title>
@@ -23,24 +23,11 @@ for Computer Vision and Image Processing</h1>
 <table>
 <tr>
 <td width ="50%">
-<h2><a href=http://www.csse.uwa.edu.au/~pk>Peter Kovesi</a></h2>
-<font size="+1" color="black">
-<a href="http://www.cet.uwa.edu.au">Centre for Exploration Targeting<br>
-School of Earth and Environment<br>
-The University of Western Australia</a></font>
-
-<!--
-<br><br><br>
-This site was developed while I was with the<p>
-<font size="+1" color="black" weight="normal"> 
-<a href="http://www.csse.uwa.edu.au">
-School of Computer Science & Software Engineering<br>
-The University of Western Australia</a> </font>
-
-<p>I continue to collaborate with the school and I thank them for continuing to host this site.
--->
+<h2><a href="http://www.peterkovesi.com">Peter Kovesi</a></h2>
 
 <td width="50%">
+&nbsp;
+<!--
 <br>
 <table border="3", cellpadding="20"> <tr><td>
 <a href="http://dicta2012.csse.uwa.edu.au">
@@ -49,23 +36,12 @@ The University of Western Australia</a> </font>
 <font size="+0" weight="bold"><b>
 Digital Image Computing: Techniques and Applications<br><br>
 Fremantle, Western Australia<br>  3-5th December 2012</b></font>
-
-</td></tr></table>
-
-<!--
-<table border="2", cellpadding="10">
-<tr><td>
-<a href="PhD.html"><h3>Ph.D Project: <br>Developing 3D Seismic Data Analysis Tools for the
-Petroleum Industry - An Image Analysis Approach</h3></a>
-</td></tr></table>
 -->
+</td></tr></table>
 
 </td>
 
 </table>
-
-<!--<img src="http://www.csse.uwa.edu.au/images/new.gif"> -->
-<!--<img src="http://www.csse.uwa.edu.au/images/updated.gif"> -->
 
 <br>
 
@@ -75,8 +51,12 @@ Petroleum Industry - An Image Analysis Approach</h3></a>
 <tr><td width="50%">
 <h3>Index to Code Sections</h3>
 <ul>
+<li>
+<img src="new.gif"> 
+<a href="#colour">Perceptually Uniform Colour Maps</a>
 <li><a href="#phasecong">Feature Detection via Phase Congruency</a>
 <li><a href="#spatial">Spatial Feature Detection</a>
+<li><a href="#segmentation">Segmentation</a>
 <li><a href="#integral">Integral Images</a>
 <li><a href="#hysthresh">Non-Maxima Suppression and Hysteresis Thresholding</a>
 <li><a href="#edgelink">Edge Linking and Line Segment Fitting</a>
@@ -94,6 +74,10 @@ Petroleum Industry - An Image Analysis Approach</h3></a>
 <li><a href="#syntheticimages">Interesting Synthetic Images</a>
 <li><a href="#asciiimage">ASCII Image Generation</a>
 <li><a href="#rotationtransforms">Rotation Transforms</a>
+<li><a href="#geosci">Geoscientific Functions</a>
+<li>
+<img src="new.gif"> 
+<a href="#blending">Interactive Image Blending</a> 
 <li><a href="#display">Image Display, Image Writing and Miscellaneous</a>
 </ul>
 
@@ -111,11 +95,6 @@ The complete set of these functions is available as a zip file
 </ul>
 
 
-</td>
-
-<td valign="top" width="50%">
-
-
 <h3>MATLAB</h3>
 <p>To use these functions you will need 
 <a href="http://www.mathworks.com/products/matlab/">MATLAB</a> and the 
@@ -123,13 +102,22 @@ The complete set of these functions is available as a zip file
 You may also want to refer to the <a href="http://www.mathworks.com.au/help/techdoc/">MATLAB documentation</a> and the
 <a href="http://www.mathworks.com/help/images/index.html">Image Processing Toolbox documentation</a><br>
 
-<br>
+
+</td>
+
+<td valign="top" width="50%">
+
 
 <h3>Octave</h3>
 <p>Alternatively you can
 use <a href="http://www.gnu.org/software/octave/">Octave</a> which is
 a very good open source alternative to MATLAB. Almost all the functions
 on this page run under Octave. See my <a href=octaveinfo.html>Notes on using Octave</a>.
+
+<p>An advantage of using Octave is that you can run it on your Android
+device.  (I can compute phase congruency on my mobile phone!)  Get
+Corbin Champion's port of Octave at Google play
+<a href="https://play.google.com/store/apps/details?id=com.octave&hl=en">here</a>. 
 
 
   <p>MATLAB/Octave compatibility of individual function is indicated as follows
@@ -140,31 +128,39 @@ on this page run under Octave. See my <a href=octaveinfo.html>Notes on using Oct
   </ul>
 
 
+<br>
+<h3><a href="http://julialang.org">
+<img style="vertical-align:middle"
+src="https://lh5.googleusercontent.com/-Iqwvvbp-o6U/VHKv98UHkDI/AAAAAAAAJVU/RqwYqjkyADI/s1600/julia.png"
+width="50"></a></h3>
+
+<p>These days I am increasingly working
+in <a href="http://julialang.org">Julia</a>.  This is a very exciting
+language that is certainly worth a look.  At this stage the language
+is still young and the image processing and computer vision packages
+are very much a work in progress.  However, watch this space! Julia may
+well become the dominant language for scientific programming.
+
+<p> Collections of functions that I have ported to Julia are indicated
+in the code sections below.
+
+<br>
+<br>
+<br>
+<br>
 <hr>
 
-<p>I receive so many mail messages regarding this
-site that I have difficulty responding to them all.  
-I will endeavor to respond to mail
-that directly concerns the use of individual functions.  
-However, please note I do not have the time to provide an on-line vision
-problem solving service! 
+<p>I receive so many mail messages regarding this site that I have
+difficulty responding to them all.  I will endeavor to respond to mail
+that directly concerns the use of individual functions.  However,
+please note I do not have the time to provide an on-line vision
+problem solving service!
 
 <p>Please report any bugs and/or suggest enhancements to<br>
-<!--<img src="http://www.csse.uwa.edu.au/~pk/pkem14b.png">-->
-<img src = "pkemail150.png">
-
-<p>Acknowledgement: This site was developed while I was with the<br>
-<a href="http://www.csse.uwa.edu.au">
-School of Computer Science & Software Engineering<br>
-The University of Western Australia</a> <br>
-I continue to collaborate with the school and I thank them for continuing to host this site.
-
-
+pk@peterkovesi.com
 
 <p>Cheers,<br>
 Peter Kovesi
-
-
 
 </td>
 </tr>
@@ -173,9 +169,269 @@ Peter Kovesi
 
 
 
+<a name="colour"></a>
+<hr>
+<h4><img src="new.gif"> 
+Perceptually Uniform Colour Maps</h4>
+
+<center>
+<img  src=WWWImages/colourmapmontage.jpg>
+</center>
+
+<p> Many widely used colour maps have perceptual flat spots that can
+hide features as large as 10% of your total data range.  MATLAB's
+'hot' and 'hsv' colour maps suffer from this problem.  Use these
+colour maps instead.  For an overview of this work and the theory
+behind it please visit
+<a href="http://peterkovesi.com/projects/colourmaps/index.html">this page</a>
+
+
+<p><b>Generation and correction of colour maps</b>
+<ul>
+
+<li><a href="Colourmaps/cmap.m">cmap.m</a> Colour map generating
+function. Select from a large library of colour maps. Colour maps are
+defined by B-spline paths through CIELAB space.  The parameterisation
+along the path is then adjusted to ensure uniform perceptual contrast.
+Modify the function to add any new colour maps you want.
+
+<li><a href="Colourmaps/equalisecolourmap.m">equalisecolourmap.m</a>
+Remaps entries in a colour map in order to equalise the perceptual
+contrast across the colour map. Used by cmap.m .  Can also be used to
+'rescue' some of MATLAB's colour maps.
+
+<li><a href="Colourmaps/linearrgbmap.m">linearrgbmap.m</a> Generates
+a linear colour map from [0 0 0] to a specified colour in RGB space.
+
+<li><a href="Colourmaps/ternarymaps.m">ternarymaps.m</a> Returns three
+basis/primary colour maps for generating ternary images.  The colour
+maps are closely matched in lightness (unlike the RGB primaries).
+
+<li><a href="Misc/randmap.m">randmap.m</a> Generates a colour map of
+random colours. Not perceptually uniform and certainly not useful for
+displaying data that varies over a continous range. However, it is
+useful for displaying a labeled segmented image.
+
+</ul>
+
+<p><b>Rendering of images with colour maps</b>
+<ul>
+
+<li><a href="Misc/applycolourmap.m">applycolourmap.m</a> Applies a
+colour map to a single channel image to obtain an RGB result.
+
+<li><a href="Misc/showdivim.m">showdivim.m</a> This function is
+intended for displaying an image with a diverging colour map.  To do
+this correctly requires that the desired reference value in the data
+is correctly associated with the centre entry of the diverging colour
+map.
+
+<li><a href="Misc/showangularim.m">showangularim.m</a> This function
+displays an image of angular data with a specified colour map.  For
+angular data to be rendered correctly it is important that the data
+values are respected so that data values are correctly assigned to
+specific entries in a cyclic colour map.  The assignment of values to
+colours also depends on whether the data is cyclic over pi, or 2*pi.
+This function also allows the colour map encoding of the angular
+information to be modulated to represent the
+amplitude/reliability/coherence of the angular data.
+
+<li><a href="Colourmaps/ternaryimage.m">ternaryimage.m</a> Generates a
+perceptually uniform ternary image from 3 bands of data using the
+colour maps generated by
+<a href="Colourmaps/ternarymaps.m">ternarymaps.m</a> 
+
+</ul>
+
+<p><b>Test images</b>
+<ul>
+<li><a href="Misc/sineramp.m">sineramp.m</a> Generates a test image
+consisting of a sine wave superimposed on a ramp function The
+amplitude of the sine wave is modulated from its full value at the top
+of the image to 0 at the bottom. A useful test image for evaluating
+colour maps.
+
+<li> <a href="Misc/circlesineramp.m">circlesineramp.m</a> Generates a
+test image representing a cyclic version of sineramp.m for testing of
+cyclic colour maps.  It consists of a sine wave superimposed on a
+spiral ramp function.
+
+</ul>
+
+<p><b>Visualization of colour map paths and colour spaces</b>
+<ul>
+
+<li><a href="Colourmaps/colourmappath.m">colourmappath.m</a> Plots the
+path of a colour map through CIELAB or RGB colour spaces.
+
+<li><a href="Misc/viewlabspace.m">viewlabspace.m</a> Interactive
+visualization of CIELAB colour space.  Useful for charting locations
+of spline control points for defining colour maps with cmap.m
+
+<li><a href="Misc/viewlabspace2.m">viewlabspace2.m</a> Another
+interactive visualization of CIELAB colour space that provides
+vertical slices through the colour space.
+
+<li><a href="Colourmaps/generatelabslice.m">generatelabslice.m</a>
+Generates an RGB image of a slice throught CIELAB space at a
+specified lightness level.
+
+</ul>
+
+
+<p><b>Functions for reading and writing colour maps in various formats</b>
+<ul>
+
+<li><a href="Colourmaps/writecolourmapfn.m">writecolourmapfn.m</a>
+Creates a MATLAB function file from a Nx3 colour map.
+
+<li><a href="Colourmaps/map2geosofttbl.m">map2geosofttbl.m</a> Writes
+a RGB colour map to a .tbl file for use with Geosoft Oasis Montaj
+or QGIS.
+
+<li><a href="Colourmaps/map2ermapperlutfile.m">map2ermapperlutfile.m</a>
+Writes a colour map to a .lut file for use with ER Mapper, Intrepid or
+MapInfo.
+
+<li><a href="Colourmaps/readermapperlutfile.m">readermapperlutfile.m</a>
+Reads a colour map in ER Mapper's LUT format.
+
+<li><a href="Colourmaps/map2imagejlutfile.m">map2imagejlutfile.m</a> Writes a
+colour map to a .lut file for use with ImageJ.
+
+<li><a href="Colourmaps/readimagejlutfile.m">readimagejlutfile.m</a>
+Reads a colour map in ImageJ's LUT format.
+
+<li><a href="Colourmaps/map2actfile.m">map2actfile.m</a> Writes a
+colour map to an Adobe Colour Map Table .act file.
+
+<li><a href="Colourmaps/map2qgisstyle.m">map2qgisstyle.m</a> Writes
+colour maps to a QGIS xml style file.
+
+</ul>
+
+<p><b>Colour conversion convenience functions.</b>
+<ul>
+<li><a href=Misc/rgb2lab.m>rgb2lab.m</a> RGB to L*a*b* colour conversion.
+<li><a href=Misc/rgb2cmyk.m>rgb2cmyk.m</a> RGB to cmyk colour conversion.
+<li><a href=Misc/cmyk2rgb.m>cmyk2rgb.m</a> cmyk to RGB colour conversion.
+<li type=square><a href=Misc/rgb2nrgb.m>rgb2nrgb.m</a> RGB to
+normalised RGB colour conversion.
+</ul>
+
+
+<p><b>Additional supporting functions that are required.</b>
+<ul>
+
+<li><a href="Misc/bbspline.m">bbspline.m</a> Basic b-spline
+implementation used to generate paths through colour space for
+cmap.m
+
+<li><a href="Misc/pbspline.m">pbspline.m</a> Basic periodic b-spline
+implementation used to generate paths through colour space for
+cmap.m
+
+<li>Also needed: <a href="Misc/show.m">show.m</a>, 
+<a href="GreyTrans/normalise.m">normalise.m</a> and
+<a href="Misc/strendswith.m">strendswith.m</a> 
+</ul>
+
+<p><b>Julia Code</b> 
+
+<p>
+&nbsp; &nbsp; &nbsp;
+<a href="http://julialang.org">
+<img style="vertical-align:middle"
+src="https://lh5.googleusercontent.com/-Iqwvvbp-o6U/VHKv98UHkDI/AAAAAAAAJVU/RqwYqjkyADI/s1600/julia.png" width="50"></a> &nbsp;  &nbsp;
+
+For those working in <a href="http://julialang.org"> Julia</a> I have
+produced a package containing most of the functions above:
+<a href="https://github.com/peterkovesi/PerceptualColourMaps.jl">PerceptualColourMaps.jl</a>
+
+
+<p><b>Reference:</b>
+<ul>
+<li>
+
+Peter Kovesi. "Good Colour Maps: How to Design Them."<br>
+<a href="http://arxiv.org/abs/1509.03700">arXiv:1509.03700 [cs.GR] 2015.</a>
+
+ 
+<a name="blending"></a>
+<hr>
+<h4><img src="new.gif"> 
+Interactive Image Blending</h4>
+
+<center><img align=top src=WWWImages/threemix5.png></center>
+
+<p>These functions provide a set of interactive tools for visualizing
+multiple images. Some videos of their use can be seen
+<a href="http://peterkovesi.com/projects/imageblending/index.html"> here</a>.
+
+<ul>
+<li><a href=Blender/linimix.m>linimix.m</a> 
+Generates an interactive image for blending between a sequence of images.
+
+<li><a href=Blender/bilinimix.m>bilinimix.m</a> 
+Generates an interactive image for blending between a 2D grid of images.
+
+<li><a href=Blender/ternarymix.m>ternarymix.m</a> Interactive ternary
+image for blending 3 images.  You can also switch between blending and
+swiping modes.<br>  Updated December 2014 to incorporate swiping in
+addition to blending. Can also switch between colour and greyscale
+modes.
+
+<li><a href=Blender/binarymix.m>binarymix.m</a>
+Just like ternarymix but for 2 images.
+
+<li><a href=Blender/cliquemix.m>cliquemix.m</a> Allows
+blending or swiping between any pair within a collection of images.
+<br>Updated December 2014 to incorporate swiping in addition to blending. 
+
+<li><a href=Blender/cyclemix.m>cyclemix.m</a> Allows
+blending between a sequence of images in a cyclic manner.
+
+<li><a href=Blender/logisticweighting.m>logisticweighting.m</a>
+Adaptation of the generalised logistics function for use as a
+weighting function for blending images. 
+
+<li><a href=Blender/swipe.m>swipe.m</a> Don't just swipe between two
+images when you can interactively swipe between 2, 3 or 4 images!
+
+<li><a href=Blender/collectncheckimages.m>collectncheckimages.m</a>
+Collects and checks images prior to blending.  
+
+</ul>
+
+<p>The functions above also require: 
+<a href=GreyTrans/normalise.m>normalise.m</a>,
+<a href=GreyTrans/histtruncate.m>histtruncate.m</a>,
+<a href=Misc/circle.m>circle.m</a>,
+<a href=Misc/circularstruct.m>circularstruct.m</a> and
+<a href=Misc/namenpath.m>namenpath.m</a>.
+
+<p><b>Demo package:</b> Download
+<a href=BlendDemo/BlendDemo.zip>BlendDemo.zip</a>.  This contains all
+the functions above and some sample data sets.  Within the expanded
+folder in MATLAB run <tt>blenddemo.m</tt>.  A series of windows will
+open, each demonstrating a different blending interface.  Click in any
+of them and play!
+
+<p><b>Reference:</b>
+<ul>
+<li>
+Peter Kovesi, Eun-Jung Holden and Jason Wong, 2014. "Interactive
+Multi-Image Blending for Visualization and
+Interpretation," <i>Computers & Geosciences</i> 72 (2014) 147-155.
+<a href="http://doi.org/10.1016/j.cageo.2014.07.010">http://doi.org/10.1016/j.cageo.2014.07.010</a>
+
+</ul>
+
+
+
 <a name="phasecong"></a>
 <hr>
-<h4>Feature Detection via Phase Congruency</h4>
+<h4>Phase Based Feature Detection and Phase Congruency</h4>
  
 <center><img align=top src=WWWImages/baboon.pc.gif> </center><br>
 <ul>
@@ -190,14 +446,17 @@ features having a phase angle of 0 or 180 degrees.
 <a href=PhaseCongruency/phasecongmono.m>phasecongmono.m</a> This
 function computes phase congruency via monogenic filters. It has
 excellent speed and much reduced memory requirements compared to the
-other phase congruency functions below.  However you may prefer the
-output from phasecong3's oriented filters.
+other phase congruency functions below.  Requires
+<a href=FrequencyFilt/filtergrid.m>filtergrid.m</a> and
+<a href=FrequencyFilt/lowpassfilter.m>lowpassfilter.m</a>
+
 
 <li type=square>
 <a href=PhaseCongruency/phasecong3.m>phasecong3.m</a>  This function
 supersedes phasecong2.m and phasecong.m  being faster and requiring less
-memory.
-
+memory.  Computes corner features in addition to edges. Requires
+<a href=FrequencyFilt/filtergrid.m>filtergrid.m</a> and
+<a href=FrequencyFilt/lowpassfilter.m>lowpassfilter.m</a>
 
 <p><ul>
 <li type=square> Deprecated: <a href=PhaseCongruency/phasecong.m>phasecong.m</a>
@@ -240,7 +499,7 @@ calculating phase symmetry. This can be used as a line and blob
 detector.  Phase symmetry is an illumination and contrast invariant
 measure of symmetry in an image.  (A bright circle is not more
 'symmetric' than a grey circle as can be the case with some other
-measures!).  (Updated May 2009)
+measures!). 
 
 <li type=square>
 <a href=PhaseCongruency/phasesymmono.m>phasesymmono.m</a> This
@@ -268,6 +527,14 @@ over a number of scales.  As in gaborconvolve this can be used as a
 pre-processing step for texture analysis, feature detection and
 classification, etc.
 
+<li type=square><a href=PhaseCongruency/highpassmonogenic.m>highpassmonogenic.m</a>
+Applies highpassfilter and computes phase and amplitude via monogenic filters.
+Requires <a href=FrequencyFilt/perfft2.m>perfft2.m</a>
+
+<li type=square><a href=FrequencyFilt/filtergrid.m>filtergrid.m</a> Generates grid
+for constructing frequency domain filters.  Used by some of the functions above.
+
+
 <li><a href=PhaseCongruency/Docs/convexpl.html>An explanation</a> of
 the implementation of convolution with log-Gabor filters used in the
 functions above. 
@@ -278,28 +545,45 @@ functions above.
 <ul>
 
 <li> Peter Kovesi, 
-     <a href="http://www.csse.uwa.edu.au/~pk/research/pkpapers/ai97.pdf">
+     <a href="http://www.peterkovesi.com/papers/ai97.pdf">
      "Symmetry and Asymmetry From Local Phase".</a> AI'97, Tenth
      Australian Joint Conference on Artificial Intelligence.  2 - 4
      December 1997. Proceedings - Poster Papers. pp 185-190.
 
 <li> Peter Kovesi, 
-     <a href="http://mitpress.mit.edu/e-journals/Videre/001/v13.html"> 
+     <a href="http://www.cs.rochester.edu/u/brown/Videre/001/v13.html">
      "Image Features From Phase Congruency".</a> 
      <i>Videre: A Journal of Computer Vision Research</i>. MIT
-     Press. Volume 1, Number 3, Summer 1999.
+     Press. Volume 1, Number 3, Summer 1999. <br>
+
+Electronic publishing, even with a reputable publisher, can be
+problematic.  For some reason the MIT Press has chosen to no longer
+maintain an archive of <i>Videre</i>. Fortunately an archive of the
+journal can be found at the University of Rochester at
+<a href =
+"http://www.cs.rochester.edu/u/brown/Videre/">www.cs.rochester.edu/u/brown/Videre</a>.
+
+<!--  <a href="http://mitpress.mit.edu/e-journals/Videre/001/v13.html"> -->
 
 <li> Peter Kovesi,
-     <a href="http://www.csse.uwa.edu.au/~pk/research/pkpapers/ACCV62.pdf">
-     "Edges Are Not Just Steps".</a> Proceedings of <em>ACCV2002 The
+     "Edges Are Not Just Steps". Proceedings of <em>ACCV2002 The
      Fifth Asian Conference on Computer Vision</em>, Melbourne Jan
-     22-25, 2002.  pp 822-827. 
+     22-25, 2002.  pp 822-827.     
+ <a href="http://www.peterkovesi.com/papers/ACCV62.pdf">(preprint)</a>
 
-<li> Peter Kovesi, 
-     <a href="http://www.csse.uwa.edu.au/~pk/research/pkpapers/phasecorners.pdf">
-     "Phase Congruency Detects Corners and Edges".</a>
+<li> Peter Kovesi, "Phase Congruency Detects Corners and Edges".
      <i> The Australian Pattern Recognition Society Conference:
-     DICTA 2003. </i> December 2003. Sydney. pp 309-318.
+Digital Image Computing: Techniques and Applications DICTA 2003. </i>
+December 2003. Sydney. pp 309-318.     
+<a href="http://www.peterkovesi.com/papers/phasecorners.pdf">(preprint)</a>
+
+<li> Peter Kovesi,
+"Invariant Measures of Image Features From Phase Information".
+PhD Thesis, The University of Western Australia. 1996.
+
+ <a href="http://repository.uwa.edu.au/R/-?func=dbin-jump-full&amp;object_id=5454&amp;silo_library=GEN01"> Download page </a>
+
+
 
 </ul>
 
@@ -314,6 +598,17 @@ detector.
 
 <li type=square><a href=Spatial/harris.m>harris.m</a> Harris corner
 detector.
+
+<li type=square><a href=Spatial/noble.m>noble.m</a> Noble's corner
+detector.
+
+<li type=square><a href=Spatial/shi_tomasi.m>shi_tomasi.m</a> The
+Shi-Tomasi corner detector returns the minimum eigenvalue of the
+structure tensor.  This represents the ideal that the Harris and Noble
+detectors attempt to approximate.
+
+<li type=square><a href=Spatial/hessianfeatures.m>hessianfeatures.m</a>
+Hessian feature detector.
 
 <li type=square><a href=Spatial/fastradial.m>fastradial.m</a> An
 implementation of Loy and Zelinski's fast radial feature
@@ -331,15 +626,9 @@ function for convenient Gaussian filtering.
  computes derivatives using the 7-tap
  coefficients given by Farid and Simoncelli.  
 
-<li type=square><a href=Spatial/regionadjacency.m>regionadjacency.m</a>
-Computes adjacency matrix for an image of labeled regions,  as
-might be produced by a graph cut algorithm.
-
-<li type=square><a href=Spatial/cleanupregions.m>cleanupregions.m</a>
-Cleans up small regions in a segmented image.
-
-<li type=square><a href=Spatial/renumberregions.m>renumberregions.m</a>
-Renumbers regions in a labeled image so that they range from 1:maxRegions.
+<li><a href=Spatial/filterregionproperties.m>filterregionproperties.m</a>
+Filters regions on their property's values.  Allows you to select
+blobs within a specified size or major axis orientation range etc
 
 </ul>
 
@@ -350,6 +639,71 @@ images</a> of my photocopy of Harris and Stephens' paper 'A Combined
 Corner and Edge Detector'.
 
 </ul>
+
+<p>
+<a href="http://julialang.org">
+<img style="vertical-align:middle"
+src="https://lh5.googleusercontent.com/-Iqwvvbp-o6U/VHKv98UHkDI/AAAAAAAAJVU/RqwYqjkyADI/s1600/julia.png" width="50"></a> &nbsp;  &nbsp;
+
+For those working in <a href="http://julialang.org"> Julia</a> the
+package
+<a href="https://github.com/peterkovesi/ImageProjectiveGeometry.jl">ImageProjectiveGeometry.jl</a>
+implements most of the functions above.
+
+
+
+<a name="segmentation"></a>
+<hr>
+<h4>Segmentation</h4>
+<ul>
+
+
+<li type=square><a href=Spatial/slic.m>slic.m</a> Implementation of
+Achanta et al's SLIC Superpixels.
+
+<li type=square><a href=Spatial/spdbscan.m>spdbscan.m</a> Clustering
+of superpixels using the DBSCAN algorithm.
+
+<li type=square><a href=Spatial/regionadjacency.m>regionadjacency.m</a>
+Computes adjacency matrix for an image of labeled regions,  as
+might be produced by a superpixel or graph cut algorithm.
+
+<li type=square><a href=Spatial/cleanupregions.m>cleanupregions.m</a>
+Cleans up small regions in a segmented image. (slow and a bit flakey,
+use mcleanupregions.m below)
+
+<li type=square><a href=Spatial/mcleanupregions.m>mcleanupregions.m</a>
+Morphological clean up of small regions in a segmented image. (needs
+<a href="Misc/circularstruct.m">circularstruct.m</a>)
+
+<li type=square><a href=Spatial/finddisconnected.m>finddisconnected.m</a>
+Finds groupings of disconnected labeled regions. Used by
+mcleanupregions.m to reduce execution time.
+
+<li type=square><a href=Spatial/makeregionsdistinct.m>makeregionsdistinct.m</a>
+Ensures labeled regions are distinct.
+
+<li type=square><a href=Spatial/renumberregions.m>renumberregions.m</a>
+Renumbers regions in a labeled image so that they range from 1:maxRegions.
+
+<li type=square><a href=Spatial/drawregionboundaries.m>drawregionboundaries.m</a>
+Draw boundaries of labeled regions in an image.
+
+<li type=square><a href=Spatial/maskimage.m>maskimage.m</a> Apply mask
+to an image.
+
+<li type=square><a href=Misc/dbscan.m>dbscan.m</a> Basic
+implementation of DBSCAN clustering
+
+<li type=square><a href=Misc/testdbscan.m>testdbscan.m</a> Function
+to test/demonstrate dbscan.m
+
+<li><a href="http://www.peterkovesi.com/projects/segmentation/">Example</a>
+illustrating how you can use the functions above to perform basic
+segmentation using SLIC superpixels and DBSCAN clustering.
+
+</ul>
+
 
 <a name="integral"></a>
 <hr>
@@ -383,7 +737,7 @@ filter widths needed to approximate a Gaussian of desired standard deviation.
 
 <p><b>Reference:</b>
 <ul>
-<li><a href="http://web.csse.uwa.edu.au/~pk/research/pkpapers/FastGaussianSmoothing.pdf">
+<li><a href="http://www.peterkovesi.com/papers/FastGaussianSmoothing.pdf">
 Fast Almost-Gaussian Filtering</a> <i> The Australian Pattern
 Recognition Society Conference: DICTA 2010. </i> December
 2010. Sydney. <br> This paper describes how to obtain high speed
@@ -411,7 +765,7 @@ performing non-maxima suppression for edge images.
 <li type=square><a href=Spatial/nonmaxsuppts.m>nonmaxsuppts.m</a> Code
 for performing non-maxima suppression and thresholding of points
 generated by a feature/corner detector. It optionally returns
-sub-pixel feature locations.
+sub-pixel feature locations. (Updated Jan 2016)
 
 <li type=square><a href=Spatial/subpix2d.m>subpix2d.m</a> Sub-pixel
 locations in a 2D image.
@@ -421,6 +775,11 @@ locations in a 3D volume or in 2D + scale space data.
 
 <li type=square> <a href=Spatial/hysthresh.m>hysthresh.m</a> code for
 performing hysteresis thresholding. 
+
+<li type=square> <a href=Spatial/featureorient.m>featureorient.m</a>
+computes orientations on a feature image prior to nonmaximal
+suppression in the case where no orientation information is available
+from the feature detection process.
 
 <li type=square> <a href=Spatial/smoothorient.m>smoothorient.m</a>
 applies smoothing to an orientation field which can be useful before
@@ -445,9 +804,13 @@ an implementation of Wellner's adaptive thresholding method.
 <ul>
 
 
-<li><a href=LineSegments/edgelink.m>edgelink.m</a> edge
-linking function that forms lists of connected edge points from a
-binary edge image. (Needs findendsjunctions and cleanedgelist below).
+<li><a href=LineSegments/edgelink.m>edgelink.m</a> 
+edge linking function that forms lists of connected edge points from a
+binary edge image. Needs findendsjunctions below. 
+
+<li><a href=LineSegments/filledgegaps.m>filledgegaps.m</a> Fills small
+gaps in a binary edge map image.  Can be useful to apply prior to edge
+linking.  Needs findisolatedpixels.m and findendsjunctions.m
 
 <li><a href=LineSegments/drawedgelist.m>drawedgelist.m</a>
 plots out a set of edge lists generated by edgelink or lineseg.
@@ -476,9 +839,13 @@ the fitted segments.
 <li><a href=LineSegments/findendsjunctions.m>findendsjunctions.m</a>
 finds line junctions and endings in a line/edge image.
 
-<li><a href=LineSegments/cleanedgelist.m>cleanedgelist.m</a> cleans up a
-set of edge lists generated by edgelink or lineseg so that isolated
+<li><a href=LineSegments/findisolatedpixels.m>findisolatedpixels.m</a>
+finds isolated pixels in an image.
+
+<li><a href=LineSegments/cleanedgelist.m>cleanedgelist.m</a> cleans up
+a set of edge lists generated by edgelink or lineseg so that isolated
 edges and spurs that are shorter than a minimum length are removed.
+There are some issues with this code and it can be memory intensive.
 
 <li><a href=LineSegments/example/index.html>Example</a> of using these
 functions above.  
@@ -545,7 +912,7 @@ enhancement, for an example of the use of this function.
 <p><b>Reference:</b>
 <ul>
 <li> Peter Kovesi, 
-     <a href="http://www.csse.uwa.edu.au/~pk/research/pkpapers/denoise.pdf">
+     <a href="http://www.peterkovesi.com/papers/denoise.pdf">
      "Phase Preserving Denoising of Images". </a>
      <i> The Australian Pattern Recognition Society Conference:
      DICTA'99. </i> December 1999. Perth WA. pp 212-217.
@@ -617,14 +984,14 @@ shapeletsurf.
 <p><b>Reference:</b>
 <ul>
 <li> Peter Kovesi, 
-<a href="http://www.csse.uwa.edu.au/~pk/research/pkpapers/shapeletsICCV.pdf">
+<a href="http://www.peterkovesi.com/papers/shapeletsICCV.pdf">
 "Shapelets Correlated with Surface Normals Produce Surfaces". </a>
 10th IEEE International Conference on Computer Vision.
 Beijing. pp 994-1001. 2005
-<li><a href="http://www.csse.uwa.edu.au/~pk/research/pkpapers/ShapeletsICCV.ppt">
+<li><a href="http://www.peterkovesi.com/papers/ShapeletsICCV.ppt">
 PowerPoint Slides</a>
 
-<li><a href="http://www.csse.uwa.edu.au/~pk/Research/ShapeFromContour/index.html">
+<li><a href="http://www.peterkovesi.com/projects/shapefromcontour/index.html">
 An example</a> of how much 3D shape you can get from very minimal
 surface normal information.
 </ul>
@@ -704,11 +1071,6 @@ number of distinct values in the output image will be the same as the
 number of distinct values in the input.  This can make a significant
 difference.
 
-<li><a href=GreyTrans/agc.m>agc.m</a> This function implements
-Rajagopalan's Automatic Gain Control algorithm.  The original
-application was for displaying geoscientific vertical magnetic
-gradient data but it can be useful for any kind of high dynamic range
-image.
 
 <!--<li><a href=GreyTrans/histtruncatex.m>histtruncatex.m</a> truncates
 ends of an image histogram.
@@ -719,7 +1081,7 @@ ends of an image histogram.
 these functions above to enhance a video surveillance image.  However
 you should note that many surveillance systems are close to being
 legally blind.<br>
-See <a href="http://www.csse.uwa.edu.au/~pk/research/pkpapers/legallyblind.pdf">Video
+See <a href="http://www.peterkovesi.com/papers/legallyblind.pdf">Video
 Surveillance: Legally Blind?</a> DICTA 2009 Melbourne.
 
 </ul>
@@ -730,7 +1092,7 @@ Surveillance: Legally Blind?</a> DICTA 2009 Melbourne.
 <ul>
 
 
-<li type=square> <img src="http://www.csse.uwa.edu.au/images/new.gif"> 
+<li type=square> 
 <a href=FrequencyFilt/perfft2.m>perfft2.m</a> 2D
 Fourier transform of the periodic component of Moisan's "Periodic plus
 Smooth Image Decomposition". I think this will become my default fft
@@ -778,6 +1140,10 @@ image amplitude spectrum averaged over all orientations.
 <li type=circle><a href=FrequencyFilt/freqcomp.m>freqcomp.m</a>
 demonstrates image reconstruction from its Fourier components.
 
+<li type=square><a href=FrequencyFilt/filtergrid.m>filtergrid.m</a>
+Generates grid for constructing frequency domain filters.  Used by
+some of the functions above.
+
 </ul>
 
 <a name="projective"></a>
@@ -809,16 +1175,20 @@ href=Projective/affinefundmatrix.m>affinefundmatrix.m</a> computes the
 affine fundamental matrix from 4 or more matching points in a stereo
 pair of images.
 
-<li type=square> <a
-href=Projective/fundfromcameras.m>fundfromcameras.m</a> computes fundamental matrix 
-given two camera projection matrices.
+<li type=square>
+<a href=Projective/fundfromcameras.m>fundfromcameras.m</a> computes
+fundamental matrix given two camera projection matrices.
 
 <li type=square>
 <a href=Projective/decomposecamera.m>decomposecamera.m</a> decomposes
 camera projection matrix into intrinsic and extrinsic parameters.
 
-<li type=square> <a
-href=Projective/rq3.m>rq3.m</a> RQ decomposition of 3 x 3 matrix.
+<li type=square> 
+<a href=Projective/rq3.m>rq3.m</a> RQ decomposition of 3 x 3 matrix.
+
+<li type=square> 
+<a href=Projective/skew.m>skew.m</a> Constructs 3x3 skew-symmetric
+matrix from a 3-vector.
 
 <li type=square> <a
 href=Projective/normalise2dpts.m>normalise2dpts.m</a> translates and
@@ -840,6 +1210,10 @@ scale 1.
 <a href=Projective/makeinhomogeneous.m>makeinhomogeneous.m</a>
 normalises an N x npts array of homogeneous points to a scale of 1 and
 returns the inhomogeneous coordinates.
+
+<li type=square>
+<a href=Projective/ray2raydist.m>ray2raydist.m</a> computes shortest
+distance between two 3D rays.
 
 <li> <a href=Projective/imTrans.m>imTrans.m</a> applies a homogeneous
 transform to an image.  The output image origin and size is adjusted
@@ -872,9 +1246,6 @@ transform constraints given a length ratio.
 intersection of two circles. Use this function to solve for affine
 transformation constraints.
 
-<li type=square> <a href=Projective/circle.m>circle.m</a> Draws a
-circle.
-
 <li type=square> <a href=Projective/hcross.m>hcross.m</a> Homogeneous
 cross product, result normalised to s = 1.
 
@@ -887,6 +1258,48 @@ transformation of points/lines.
 <li type=square> <a href=Projective/plotPoint.m>plotPoint.m</a> Plots
 point with specified mark and optional text label.
 
+<li type=square>
+<a href=Projective/cameraproject.m>cameraproject.m</a> Projects 3D
+world points into a camera image.
+
+<li type=square>
+<a href=Projective/idealimagepts.m>idealimagepts.m</a> Computes image
+locations that would be obtained if the camera had no lens distortion.
+
+<li type=square>
+<a href=Projective/imagept2plane.m>imagept2plane.m</a> 
+Projects image points to a plane and returns their 3D locations.
+
+<li type=square>
+<a href=Projective/solvestereopt.m>solvestereopt.m</a> Solves 3D
+location of a point given image coordinates of that point in two, or
+more, images.
+
+<!--
+<li type=square>
+<a href=Projective/findinverselensdist.m>findinverselensdist.m</a>
+Find inverse radial lens distortion parameters, can be used by imagept2plane.m.
+-->
+
+<li type=square>
+<a href=Projective/undistortimage.m>undistortimage.m</a> Removes lens
+distortion from an image given the radial lens distortion coefficients.
+
+<li type=square>
+<a href=Projective/camstruct.m>camstruct.m</a> constructs a structure
+that holds camera parameters. These include lens distortion parameters
+and the image size.
+
+<li type=square>
+<a href=Projective/camstruct2projmatrix.m>camstruct2projmatrix.m</a>
+converts a camera structure to a 3x4 projection matrix ignoring lens
+distortion parameters.
+
+<li>
+<a href=Projective/plotcamera.m>plotcamera.m</a> Plots a
+representation of a camera in 3 space given a camera structure.
+
+
 <p><li> If you are using these functions above you should look at
 Andrew
 Zisserman's <a href="http://www.robots.ox.ac.uk/~vgg/hzbook/code/">
@@ -895,6 +1308,19 @@ listen to <a href="http://danielwedge.com/fmatrix/">The Fundamental
 Matrix Song</a> by Daniel Wedge.
 
 </ul>
+
+
+<p>
+<a href="http://julialang.org">
+<img style="vertical-align:middle"
+src="https://lh5.googleusercontent.com/-Iqwvvbp-o6U/VHKv98UHkDI/AAAAAAAAJVU/RqwYqjkyADI/s1600/julia.png" width="50"></a> &nbsp;  &nbsp;
+
+For those working in <a href="http://julialang.org"> Julia</a> the
+package
+<a href="https://github.com/peterkovesi/ImageProjectiveGeometry.jl">ImageProjectiveGeometry.jl</a>
+implements most of the functions above.
+
+
 
 
 
@@ -1006,14 +1432,24 @@ functions above to find the fundamental matrix.
 
 <p><b>References:</b>
 <ul>
-<li><img src="http://www.csse.uwa.edu.au/images/new.gif"> Listen
-to <a href="http://danielwedge.com/ransac/">The RANSAC Song</a> by
-Daniel Wedge.
+<li> Listen to <a href="http://danielwedge.com/ransac/">The RANSAC
+Song</a> by Daniel Wedge.
 <li> You should also check out
 his <a href="http://danielwedge.com/esong/">2.71828183: The Number <i>e</i>
 Song</a>
 
 </ul>
+
+<p>
+<a href="http://julialang.org">
+<img style="vertical-align:middle"
+src="https://lh5.googleusercontent.com/-Iqwvvbp-o6U/VHKv98UHkDI/AAAAAAAAJVU/RqwYqjkyADI/s1600/julia.png" width="50"></a> &nbsp;  &nbsp;
+
+For those working in <a href="http://julialang.org"> Julia</a> the
+package
+<a href="https://github.com/peterkovesi/ImageProjectiveGeometry.jl">ImageProjectiveGeometry.jl</a>
+implements most of the functions above.
+
 
 <!--
 <a name="lensdistort"></a>
@@ -1108,9 +1544,66 @@ a fingerprint image using oriented filters.
 <li><a href=FingerPrints/Docs/index.html>Example</a> of using these functions above.
 </ul>
 
+
+<a name="geosci"></a>
+<hr>
+<h4>Geoscientific Functions</h4>
+
+<center><img align=top src=WWWImages/dem_shading.png> &nbsp; &nbsp;
+        <img align=top src=WWWImages/OzMag.png></center>
+
+<ul>
+
+<li type=square><a href="PhaseCongruency/ppdrc.m">ppdrc.m</a> Phase Preserving
+Dynamic Range Compression.  A frequency based tonemapping algorithm
+suited to scientific, non-photographic images.  Try using this
+function instead of histogram equalization.  Very good on aeromagentic
+data. Requires
+<a href=PhaseCongruency/highpassmonogenic.m>highpassmonogenic.m</a>
+
+<li><a href="Geosci/irelief.m">irelief.m</a> Function for interactive
+relief shading of a dataset.  Requires
+<a href=Misc/applycolourmap.m>applycolourmap.m</a>
+
+<li type=square><a href="Geosci/relief.m">relief.m</a> Non-interactive version
+of the function above.
+
+<li type=square><a href="Geosci/upwardcontinue.m">upwardcontinue.m</a>
+Generates upward continuation of magnetic or gravity potential field data.
+
+<li type=square><a href="Geosci/vertderiv.m">vertderiv.m</a> Generates
+a vertical derivative of potential field data.
+
+<li type=square><a href="Geosci/tiltderiv.m">tiltderiv.m</a> Generates
+tilt derivative of potential field data.
+
+<li type=square><a href="Geosci/agc.m">agc.m</a> This function implements
+Rajagopalan's Automatic Gain Control algorithm.  The original
+application was for displaying geoscientific vertical magnetic
+gradient data but it can be useful for any kind of high dynamic range
+image.
+
+<li type=square><a href="Geosci/orientationfilter.m">orientationfilter.m</a>
+Generates orientation selective filterings of an image.  Use for
+highlighting structures with dominant orientations in your data.
+
+</ul>
+
+<p><b>Reference:</b>
+<ul>
+<li> Peter Kovesi, "Phase Preserving Tone Mapping of Non-Photographic
+High Dynamic Range Images". Proceedings: <i> The Australian Pattern
+Recognition Society Conference: Digital Image Computing: Techniques
+and Applications DICTA 2012. </i> 
+<a href="http://www.peterkovesi.com/papers/DICTA2012-tonemapping.pdf">(preprint)</a>
+
+</ul>
+
+
+
 <a name="syntheticimages"></a>
 <hr> 
-<h4>Interesting Synthetic Images </h4>
+<h4>Interesting Synthetic and Test Images </h4>
 <center><img align=top src=WWWImages/clouds.gif></center><br> 
 <ul>
 
@@ -1130,6 +1623,18 @@ sections of colourmaps, over varying spatial frequencies and contrast.
 
 <li type=circle> <a href=Misc/chirplin.m>chirplin.m</a> similar to
 chirpexp.m but with a linear chirp signal.
+
+<li type=circle> <a href=Misc/sineramp.m>sineramp.m</a> Generates a
+test image consisting of a sine wave superimposed on a ramp function
+The amplitude of the sine wave is modulated from its full value at the
+top of the image to 0 at the bottom. A useful test image for
+highlighting problems in colour maps.
+
+<li type=circle> <a href=Misc/circlesineramp.m>circlesineramp.m</a>
+Generates a test image representing a cyclic version of sineramp.m for
+testing of cyclic colour maps.  It consists of a sine wave
+superimposed on a spiral ramp function.
+
 
 </ul>    
 <br><br>
@@ -1247,24 +1752,51 @@ normalises angle-axis descriptor so that the angle has a maximum magnitude of pi
 
 </ul>
 
+<p>
+<a href="http://julialang.org">
+<img style="vertical-align:middle"
+src="https://lh5.googleusercontent.com/-Iqwvvbp-o6U/VHKv98UHkDI/AAAAAAAAJVU/RqwYqjkyADI/s1600/julia.png" width="50"></a> &nbsp;  &nbsp;
+
+For those working in <a href="http://julialang.org"> Julia</a> the
+package
+<a href="https://github.com/peterkovesi/ImageProjectiveGeometry.jl">ImageProjectiveGeometry.jl</a>
+implements most of the functions above.
+
+
 <hr>
-
-
 <a name="display"></a>
 <h4>Image Display, Image Writing and Miscellaneous</h4>
 <ul>
 
 <li type=circle><a href=Misc/findimage.m>findimage.m</a> Displays a
-file dialog box to allow you to find and load your image
-interactively.  Useful when you have forgotten the name of your image,
-or can't be bothered typing it out.
+file dialog box to allow you to find and load an image interactively.
+Useful when you have forgotten the name of your image, or can't be
+bothered typing it out.
+
+<li type=circle><a href=Misc/findimages.m>findimages.m</a> Allows you
+to select and load multiple images.  These are returned in a cell array.
 
 <li type=square><a href=Misc/show.m>show.m</a> This function displays
-an image, automatically setting the colour map to grey if it is a 2D
+an image, automatically setting the colour map to grey(256) if it is a 2D
 image, or leaving it as colour otherwise, and setting the axes to be
 'equal'.  The image is also displayed as 'TrueSize', that is, pixels
 on the screen match pixels in the image.  Finally a title
 corresponding to the image variable name is added.
+
+<li><a href=Misc/showangularim.m>showangularim.m</a> This function
+displays an image of angular data with a specified colour map.  For
+angular data to be rendered correctly it is important that the data
+values are respected so that data values are correctly assigned to
+specific entries in a cyclic colour map.  The assignment of values to
+colours also depends on whether the data is cyclic over pi, or 2*pi.
+This function also allows the colour map encoding of the angular
+information to be modulated to represent the
+amplitude/reliability/coherence of the angular data.
+
+<li><a href=Misc/showdivim.m>showdivim.m</a> This function is intended
+for displaying an image with a diverging colour map.  To do this
+correctly requires that the desired reference value in the data is
+correctly associated with the centre entry of the diverging colour map.
 
 <li type=square><a href=Misc/showfft.m>showfft.m</a> displays the
 amplitude spectrum of an fft.
@@ -1322,27 +1854,34 @@ an image at a specified location within a larger image.
 <li type=square><a href=Misc/cubicroots.m>cubicroots.m</a> computes
 the real roots of a cubic.
 
-<li type=square><a href=Misc/rgb2nrgb.m>rgb2nrgb.m</a> RGB to
-normalised RGB colour conversion.
-
-<li><a href=Misc/rgb2lab.m>rgb2lab.m</a> RGB to L*a*b* colour conversion.
-
-<li><a href=Misc/hsvmap.m>hsvmap.m</a> Generates an HSV colourmap over
-a specified range of hues.
-
-<li><a href=Misc/labmap.m>labmap.m</a> Generates a L*a*b* colourmap
-over a specified range of angles in the a*b* plane.  In principle
-L*a*b* space is more perceptually uniform than, say, HSV space.  Thus
-it may be a better colourmap for some applications.
-
-<li><a href=Misc/graymap.m>graymap.m</a> Generates a gray colourmap over
-a specified range of levels.
-
 <li><a href=Misc/weightedhistc.m>weightedhistc.m</a> basic equivalent
  to MATLAB's HISTC function for weighted data.
 
 <li><a href=Misc/geoseries.m>geoseries.m</a> convenience function for
 generating geometric series.
+
+<li type=square> <a href=Misc/circle.m>circle.m</a> Draws a circle.
+
+<li><a href=Misc/circularstruct.m>circularstruct.m</a> generates a
+circular structuring element for morphological operations.  You can
+use MATLAB's strel('disk',R,0) instead.  However occasionally I like
+being able to tweak the shape by using floating point values for the
+radius.
+
+<li type=square>
+<a href=Misc/pointinconvexpoly.m>pointinconvexpoly.m</a> Determine if
+a 2D point is within a convex polygon.
+
+<li type=square>
+<a href=Misc/rectintersect.m>rectintersect.m</a> Determine if two
+rectangles intersect.
+
+<li type=square> <a href=Misc/polyfit2d.m>polyfit2d.m</a> Fits 2D
+polynomial surface to data.  Basic 2D equivalent of MATLAB's 1D polyfit.
+Incorporates some normalisation to reduce numerical problems.
+
+<li type=square> <a href=Misc/polyval2d.m>polyval2d.m</a> Evaluates 2D
+polynomial surface generated by polyfit2d.m
 
 </ul>
 

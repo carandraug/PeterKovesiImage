@@ -1,7 +1,7 @@
 % GABORCONVOLVE - function for convolving image with log-Gabor filters
 %
 % Usage: [EO, BP] = gaborconvolve(im,  nscale, norient, minWaveLength, mult, ...
-%			    sigmaOnf, Lnorm, feedback)
+%			    sigmaOnf, dThetaOnSigma, Lnorm, feedback)
 %
 % Arguments:
 % The convolutions are done via the FFT.  Many of the parameters relate 
@@ -14,11 +14,15 @@
 %    nscale          = 4;      Number of wavelet scales.
 %    norient         = 6;      Number of filter orientations.
 %    minWaveLength   = 3;      Wavelength of smallest scale filter.
-%    mult            = 2;      Scaling factor between successive filters.
+%    mult            = 1.7;    Scaling factor between successive filters.
 %    sigmaOnf        = 0.65;   Ratio of the standard deviation of the
 %                              Gaussian describing the log Gabor filter's
 %                              transfer function in the frequency domain
-%                              to the filter center frequency. 
+%                              to the filter center frequency.
+%    dThetaOnSigma   = 1.3;    Ratio of angular interval between filter
+%                              orientations and the standard deviation of
+%                              the angular Gaussian function used to
+%                              construct filters in the freq. plane.
 %    Lnorm            0        Optional integer indicating what norm the
 %                              filters should be normalized to.  A value of 1
 %                              will produce filters with the same L1 norm, 2
@@ -48,26 +52,22 @@
 %   BP - Cell array of bandpass images corresponding to each scale s.
 %   
 %
-% Notes on filter settings to obtain even coverage of the spectrum
-% dthetaOnSigma 1.5
-% sigmaOnf  .85   mult 1.3
-% sigmaOnf  .75   mult 1.6     (bandwidth ~1 octave)
-% sigmaOnf  .65   mult 2.1
-% sigmaOnf  .55   mult 3       (bandwidth ~2 octaves)
+% Notes on filter settings to obtain even coverage of the spectrum energy
+% dThetaOnSigma 1.2 - 1.3
+% sigmaOnf  .90   mult 1.15
+% sigmaOnf  .85   mult 1.2
+% sigmaOnf  .75   mult 1.4       (bandwidth ~1 octave)
+% sigmaOnf  .65   mult 1.7
+% sigmaOnf  .55   mult 2.2       (bandwidth ~2 octaves)
 %                                                       
-% For maximum speed the input image should be square and have a 
-% size that is a power of 2, but the code will operate on images
-% of arbitrary size.  
+% The determination of mult given sigmaOnf is entirely empirical.  What I do is
+% plot out the sum of the squared filter amplitudes in the frequency domain and
+% see how even the coverage of the spectrum is.  If there are concentric 'gaps'
+% in the spectrum one needs to reduce mult and/or reduce sigmaOnf (which
+% increases filter bandwidth)
 %
-%
-% The determination of mult given sigmaOnf is entirely empirical
-% What I do is plot out the sum of the filters in the frequency domain
-% and see how even the coverage of the spectrum is.
-% If there are concentric 'gaps' in the spectrum one needs to
-% reduce mult and/or reduce sigmaOnf (which increases filter bandwidth)
-%
-% If there are 'gaps' radiating outwards then one needs to reduce
-% dthetaOnSigma (increasing angular bandwidth of the filters)
+% If there are 'gaps' radiating outwards then one needs to reduce dthetaOnSigma
+% (increasing angular bandwidth of the filters)
 %
 
 % For details of log-Gabor filters see: 
@@ -91,9 +91,10 @@
 
 % May   2001 - Original version
 % April 2010 - Reworked to tidy things up. Return of bandpass images added.
+% March 2013 - Restored use of dThetaOnSigma to control angular spread of filters.
 
 function [EO, BP] = gaborconvolve(im, nscale, norient, minWaveLength, mult, ...
-			    sigmaOnf, Lnorm, feedback)
+			    sigmaOnf, dThetaOnSigma, Lnorm, feedback)
     
     if ndims(im) == 3
         warning('Colour image supplied: Converting to greyscale');
@@ -161,7 +162,8 @@ function [EO, BP] = gaborconvolve(im, nscale, norient, minWaveLength, mult, ...
         fo = 1.0/wavelength;                  % Centre frequency of filter.
         logGabor{s} = exp((-(log(radius/fo)).^2) / (2 * log(sigmaOnf)^2));  
         logGabor{s} = logGabor{s}.*lp;        % Apply low-pass filter
-        logGabor{s}(1,1) = 0;                 % Set the value at the 0 frequency point of the filter
+        logGabor{s}(1,1) = 0;                 % Set the value at the 0
+                                              % frequency point of the filter 
                                               % back to zero (undo the radius fudge).
         % Compute bandpass image for each scale 
         if Lnorm == 2       % Normalize filters to have same L2 norm
@@ -196,24 +198,10 @@ function [EO, BP] = gaborconvolve(im, nscale, norient, minWaveLength, mult, ...
         dc = costheta * cos(angl) + sintheta * sin(angl);     % Difference in cosine.
         dtheta = abs(atan2(ds,dc));                           % Absolute angular distance.
 
-        % Scale dtheta so that cosine spread function has the right wavelength and clamp to pi    
-        dtheta = min(dtheta*norient/2,pi);
-        
-        % The spread function is cos(dtheta) between -pi and pi.  We add 1,
-        % and then divide by 2 so that the value ranges 0-1
-        spread = (cos(dtheta)+1)/2;        
-
-
-% Old angular spread function        
-%        dThetaOnSigma = 1.2;
-%        thetaSigma = pi/norient/dThetaOnSigma;  % Calculate the standard deviation of the
-%                                                % angular Gaussian function used to
-%                                                % construct filters in the freq. plane.
-%
-%        spread = exp((-dtheta.^2) / (2 * thetaSigma^2));  % Calculate the
-%                                                          % angular filter component.        
-        
-        
+        % Calculate the standard deviation of the angular Gaussian
+        % function used to construct filters in the freq. plane.
+        thetaSigma = pi/norient/dThetaOnSigma;  
+        spread = exp((-dtheta.^2) / (2 * thetaSigma^2));  
         
         for s = 1:nscale,                    % For each scale.
             filter = logGabor{s} .* spread;  % Multiply by the angular spread to get the filter
@@ -236,8 +224,6 @@ function [EO, BP] = gaborconvolve(im, nscale, norient, minWaveLength, mult, ...
     end  % For each orientation
     
     if feedback, fprintf('                                        \r'); end
-
-
 
 
 

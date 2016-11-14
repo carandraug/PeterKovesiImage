@@ -22,14 +22,16 @@ function t = newangleaxis(theta, axis)
         error('axis must be a 3 vector');
     end
     
-    axis = axis/norm(axis);  % Make unit length
+    axis = axis(:)/norm(axis(:));  % Ensure unit magnitude
     
     % Normalise theta to lie in the range -pi to pi to ensure one-to-one mapping
-    % between angle-axis descriptor and resulting rotation.  Note that -ve
-    % rotations are achieved by reversing the direction of the axis.
+    % between angle-axis descriptor and resulting rotation. 
+    theta = rem(theta, 2*pi);  % Remove multiples of 2pi
     
-    if abs(theta) > pi
-        theta = theta*(1 - (2*pi)/abs(theta));
+    if theta > pi
+        theta = theta - 2*pi; 
+    elseif  theta < -pi
+        theta = theta + 2*pi; 
     end
     
     t = theta*axis;

@@ -16,11 +16,12 @@
 % Returns:    h     - Handle to the figure.  This allows you to set
 %                     additional figure attributes if desired.
 %
-% The function displays the image, automatically setting the colour map to
-% grey if it is a 2D image, or leaving it as colour otherwise, and setting
-% the axes to be 'equal'.  The image is also displayed as 'TrueSize', that
-% is, pixels on the screen match pixels in the image (if it is possible
-% to fit it on the screen, otherwise MATLAB rescales it to fit).
+% The function displays the image, automatically setting the colour map to grey
+% if it is a 2D image, or leaving it as colour otherwise, and setting the axes
+% to be 'equal'. (A 256 level greymap is specified, not MATLAB's default 64).
+% The image is also displayed as 'TrueSize', that is, pixels on the screen match
+% pixels in the image (if it is possible to fit it on the screen, otherwise
+% MATLAB rescales it to fit).
 %
 % Unless you are doing a subplot (figNo==0) the window is sized to match
 % the image, leaving no border, and hence saving desktop real estate.
@@ -52,6 +53,8 @@
 % September 2008  Octave compatible
 % May       2009  Reworked argument handling logic for extra flexibility
 % January   2013  More Octave compatibility and proper restoring of warning state (Carnë Draug)
+% March     2013  Ensure grey colour map has 256 levels rather than the
+%                 default 64
 
 function h = show(im, param2, param3)
 
@@ -105,7 +108,7 @@ function h = show(im, param2, param3)
 
     if ndims(im) == 2          % Display as greyscale
         imagesc(im);
-        colormap('gray');
+        colormap(gray(256));   % Ensure we have a full 256 level greymap
     else
         imshow(im);            % Display as RGB
     end

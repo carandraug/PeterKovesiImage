@@ -7,7 +7,7 @@
 %
 %   [PC or ft T] =  ...
 %                phasecongmono(im, nscale, minWaveLength, mult, ...
-%                         sigmaOnf, k, cutOff, g, noiseMethod)
+%                         sigmaOnf, k, cutOff, g, deviationGain, noiseMethod)
 %
 % However, apart from the image, all parameters have defaults and the
 % usage can be as simple as:
@@ -17,27 +17,35 @@
 % Arguments:
 %              Default values      Description
 %
-%    nscale           5    - Number of wavelet scales, try values 3-6
+%    nscale           4    - Number of wavelet scales, try values 3-6
+%                            A lower value will reveal more fine scale
+%                            features. A larger value will highlight 'major'
+%                            features.
 %    minWaveLength    3    - Wavelength of smallest scale filter.
 %    mult             2.1  - Scaling factor between successive filters.
 %    sigmaOnf         0.55 - Ratio of the standard deviation of the Gaussian 
 %                            describing the log Gabor filter's transfer function 
 %                            in the frequency domain to the filter center frequency.
-%    k                2.0  - No of standard deviations of the noise energy beyond
+%    k                3.0  - No of standard deviations of the noise energy beyond
 %                            the mean at which we set the noise threshold point.
 %                            You may want to vary this up to a value of 10 or
 %                            20 for noisy images 
+%    cutOff           0.5  - The fractional measure of frequency spread
+%                            below which phase congruency values get penalized.
+%    g                10   - Controls the sharpness of the transition in
+%                            the sigmoid function used to weight phase
+%                            congruency for frequency spread.                        
+%    deviationGain    1.5  - Amplification to apply to the calculated phase
+%                            deviation result. Increasing this sharpens the
+%                            edge responses, but can also attenuate their
+%                            magnitude if the gain is too large.  Sensible
+%                            values to use lie in the range 1-2.
 %    noiseMethod      -1   - Parameter specifies method used to determine
 %                            noise statistics. 
 %                              -1 use median of smallest scale filter responses
 %                              -2 use mode of smallest scale filter responses
 %                               0+ use noiseMethod value as the fixed noise threshold 
 %                            A value of 0 will turn off all noise compensation.
-%    cutOff           0.5  - The fractional measure of frequency spread
-%                            below which phase congruency values get penalized.
-%    g                10   - Controls the sharpness of the transition in
-%                            the sigmoid function used to weight phase
-%                            congruency for frequency spread.                        
 %
 % Returned values:
 %    PC         - Phase congruency indicating edge significance
@@ -67,7 +75,15 @@
 % The convolutions are done via the FFT.  Many of the parameters relate to the
 % specification of the filters in the frequency plane.  The values do not seem
 % to be very critical and the defaults are usually fine.  You may want to
-% experiment with the values of 'nscales' and 'k', the noise compensation factor.
+% experiment with the values of 'nscales' and 'k', the noise compensation
+% factor.
+%
+% Typical sequence of operations to obtain an edge image:
+%
+%  >> [PC, or] = phasecongmono(imread('lena.tif'));
+%  >> nm = nonmaxsup(PC, or, 1.5);   % nonmaxima suppression
+%  >> bw = hysthresh(nm, 0.1, 0.3);  % hysteresis thresholding 0.1 - 0.3
+%  >> show(bw)
 %
 % Notes on filter settings to obtain even coverage of the spectrum
 % sigmaOnf       .85   mult 1.3
@@ -75,7 +91,11 @@
 % sigmaOnf       .65   mult 2.1  
 % sigmaOnf       .55   mult 3       (filter bandwidth ~2 octaves)
 %
-% See Also:  PHASECONG, PHASECONG2, PHASECONG3, PHASESYMMONO, GABORCONVOLVE, PLOTGABORFILTERS
+% Note that better results are achieved using the large bandwidth filters.  
+% I generally use a sigmaOnf value of 0.55 or even smaller.
+%
+% See Also:  PHASECONG, PHASECONG3, PHASESYMMONO, GABORCONVOLVE,
+% PLOTGABORFILTERS, FILTERGRID
 
 % References:
 %
@@ -104,33 +124,38 @@
 %                Frequency width measure slightly improved.
 % June 2009      20% Speed improvement through calculating phase deviation via
 %                acos() rather than computing cos(theta)-|sin(theta)| via dot
-%                and cross products.  Also much smaller memory footprint
+%                and cross products.  Phase congruency is formed properly in
+%                2D rather than as multiple 1D computations as in
+%                phasecong3. Also, much smaller memory footprint.
+% May 2013       Some tidying up, corrections to defualt parameters, changes
+%                to reflect my latest thinking of the final phase congruency
+%                calculation and addition of phase deviation gain parameter to
+%                sharpen up the output. Use of periodic fft.
 
-% Copyright (c) 1996-2009 Peter Kovesi
-% School of Computer Science & Software Engineering
+% Copyright (c) 1996-2013 Peter Kovesi
+% Centre for Exploration Targeting
 % The University of Western Australia
-% pk @ csse uwa edu au
-% http://www.csse.uwa.edu.au/
+% peter.kovesi at uwa edu au
 % 
-% Permission is hereby  granted, free of charge, to any  person obtaining a copy
-% of this software and associated  documentation files (the "Software"), to deal
+% Permission is hereby granted, free of charge, to any person obtaining a copy
+% of this software and associated documentation files (the "Software"), to deal
 % in the Software without restriction, subject to the following conditions:
 % 
-% The above copyright notice and this permission notice shall be included in all
-% copies or substantial portions of the Software.
-% 
-% The software is provided "as is", without warranty of any kind.
+% The above copyright notice and this permission notice shall be included in 
+% all copies or substantial portions of the Software.
+%
+% The Software is provided "as is", without warranty of any kind.
 
 function [PC, or, ft, T] = phasecongmono(varargin)
 
     % Get arguments and/or default values    
     [im, nscale, minWaveLength, mult, sigmaOnf, k, ...
-     noiseMethod, cutOff, g] = checkargs(varargin(:));  
+     noiseMethod, cutOff, g, deviationGain] = checkargs(varargin(:));  
 
     epsilon         = .0001;            % Used to prevent division by zero.
 
     [rows,cols] = size(im);
-    IM = fft2(im);                      % Fourier transform of image
+    IM = perfft2(im);                   % Periodic Fourier transform of image
 
     sumAn  = zeros(rows,cols);          % Matrix for accumulating filter response
                                         % amplitude values.
@@ -138,30 +163,8 @@ function [PC, or, ft, T] = phasecongmono(varargin)
     sumh1  = zeros(rows,cols);                                      
     sumh2  = zeros(rows,cols);                                          
 
-    % Pre-compute some stuff to speed up filter construction
-    %
-    % Set up u1 and u2 matrices with ranges normalised to +/- 0.5
-    % The following code adjusts things appropriately for odd and even values
-    % of rows and columns.
-    if mod(cols,2)
-        xrange = [-(cols-1)/2:(cols-1)/2]/(cols-1);
-    else
-        xrange = [-cols/2:(cols/2-1)]/cols;     
-    end
-    
-    if mod(rows,2)
-        yrange = [-(rows-1)/2:(rows-1)/2]/(rows-1);
-    else
-        yrange = [-rows/2:(rows/2-1)]/rows;     
-    end
-    
-    [u1,u2] = meshgrid(xrange, yrange);
-    
-    u1 = ifftshift(u1);   % Quadrant shift to put 0 frequency at the corners
-    u2 = ifftshift(u2);
-    
-    % Compute frequency values as a radius from centre (but quadrant shifted)
-    radius = sqrt(u1.^2 + u2.^2);   
+    % Generate grid data for constructing filters in the frequency domain    
+    [radius, u1, u2] = filtergrid(rows, cols);    
     
     % Get rid of the 0 radius value in the middle (at top left corner after
     % fftshifting) so that taking the log of the radius, or dividing by the
@@ -192,15 +195,15 @@ function [PC, or, ft, T] = phasecongmono(varargin)
     % this to ensure no extra frequencies at the 'corners' of the FFT are
     % incorporated as this can upset the normalisation process when
     % calculating phase congruency
-    lp = lowpassfilter([rows,cols],.4,10);    % Radius .4, 'sharpness' 10
+    lp = lowpassfilter([rows,cols],.45,15);    % Radius .4, 'sharpness' 15
 
     for s = 1:nscale
         wavelength = minWaveLength*mult^(s-1);
         fo = 1.0/wavelength;                  % Centre frequency of filter.
         logGabor = exp((-(log(radius/fo)).^2) / (2 * log(sigmaOnf)^2));  
         logGabor = logGabor.*lp;              % Apply low-pass filter
-        logGabor(1,1) = 0;                    % Set the value at the 0 frequency point of the filter
-                                              % back to zero (undo the radius fudge).
+        logGabor(1,1) = 0;                    % Set the value at the 0 frequency point of the 
+                                              % filter back to zero (undo the radius fudge).
 
         IMF = IM.*logGabor;       % Bandpassed image in the frequency domain.
         f = real(ifft2(IMF));     % Bandpassed image in spatial domain.
@@ -222,7 +225,7 @@ function [PC, or, ft, T] = phasecongmono(varargin)
         % distribution.
         if s == 1 
             if noiseMethod == -1     % Use median to estimate noise statistics
-                tau = median(sumAn(:))/sqrt(log(4));   
+                tau = median(sumAn(:))/sqrt(log(4));
             elseif noiseMethod == -2 % Use mode to estimate noise statistics
                 tau = rayleighmode(sumAn(:));
             end
@@ -296,7 +299,7 @@ function [PC, or, ft, T] = phasecongmono(varargin)
     ft = atan2(sumf,sqrt(sumh1.^2+sumh2.^2));  % Feature type - a phase angle
                                                % -pi/2 to pi/2.
 
-    energy =  sqrt(sumf.^2 + sumh1.^2 + sumh2.^2) + epsilon;  % Overall energy
+    energy =  sqrt(sumf.^2 + sumh1.^2 + sumh2.^2);  % Overall energy
 
     % Compute phase congruency.  The original measure, 
     % PC = energy/sumAn 
@@ -306,15 +309,19 @@ function [PC, or, ft, T] = phasecongmono(varargin)
     % (Note this was actually calculated via dot and cross products.)  This measure
     % approximates 
     % PC = 1 - phasedeviation.  
+
     % However, rather than use dot and cross products it is simpler and more
     % efficient to simply use acos(energy/sumAn) to obtain the weighted phase
     % deviation directly.  Note, in the expression below the noise threshold is
     % not subtracted from energy immediately as this would interfere with the
-    % phase deviation computation.  Instead it is subtracted after this
-    % computation, hence the separate division by sumAn.  Finally this result is
-    % floored at 0, and then weighted for frequency spread.
-    
-    PC = weight.*max(1 - acos(energy./(sumAn + epsilon)) -  T./(sumAn+epsilon), 0); 
+    % phase deviation computation.  Instead it is applied as a weighting as a
+    % fraction by which energy exceeds the noise threshold.  This weighting is
+    % applied in addition to the weighting for frequency spread.  Note also the
+    % phase deviation gain factor which acts to sharpen up the edge response. A
+    % value of 1.5 seems to work well.  Sensible values are from 1 to about 2.
+
+    PC = weight.*max(1 - deviationGain*acos(energy./(sumAn + epsilon)),0) ...
+          .* max(energy-T,0)./(energy+epsilon);
     
 %------------------------------------------------------------------
 % CHECKARGS
@@ -323,7 +330,7 @@ function [PC, or, ft, T] = phasecongmono(varargin)
 % default values as needed and perform basic checks.
     
 function [im, nscale, minWaveLength, mult, sigmaOnf, ...
-          k,  noiseMethod, cutOff, g] = checkargs(arg)
+          k,  noiseMethod, cutOff, g, deviationGain] = checkargs(arg)
 
     nargs = length(arg);
     
@@ -334,21 +341,21 @@ function [im, nscale, minWaveLength, mult, sigmaOnf, ...
     % Set up default values for all arguments and then overwrite them
     % with with any new values that may be supplied
     im              = [];
-    nscale          = 5;     % Number of wavelet scales.    
+    nscale          = 4;     % Number of wavelet scales.    
     minWaveLength   = 3;     % Wavelength of smallest scale filter.    
     mult            = 2.1;   % Scaling factor between successive filters.    
-    sigmaOnf        = 0.65;  % Ratio of the standard deviation of the
+    sigmaOnf        = 0.55;  % Ratio of the standard deviation of the
                              % Gaussian describing the log Gabor filter's
                              % transfer function in the frequency domain
                              % to the filter center frequency.    
-    k               = 2.0;   % No of standard deviations of the noise
+    k               = 3.0;   % No of standard deviations of the noise
                              % energy beyond the mean at which we set the
                              % noise threshold point. 
-
     noiseMethod     = -1;    % Use the median response of smallest scale
                              % filter to estimate noise statistics
     cutOff          = 0.5;
     g               = 10;
+    deviationGain   = 1.5;
     
     % Allowed argument reading states
     allnumeric   = 1;       % Numeric argument values in predefined order
@@ -368,9 +375,10 @@ function [im, nscale, minWaveLength, mult, sigmaOnf, ...
                 elseif n == 4, mult          = arg{n};
                 elseif n == 5, sigmaOnf      = arg{n};
                 elseif n == 6, k             = arg{n};              
-                elseif n == 7, noiseMethod   = arg{n};              
-                elseif n == 8, cutOff        = arg{n};              
-                elseif n == 9, g            = arg{n};                               
+                elseif n == 7, cutOff        = arg{n};              
+                elseif n == 8, g             = arg{n};
+                elseif n == 9, deviationGain = arg{n};
+                elseif n == 10, noiseMethod  = arg{n};              
                 end
             end
         end
@@ -390,9 +398,10 @@ function [im, nscale, minWaveLength, mult, sigmaOnf, ...
             elseif strncmpi(arg{n},'mult'    ,2),      mult =          arg{n+1};
             elseif strncmpi(arg{n},'sigmaOnf',2),      sigmaOnf =      arg{n+1};
             elseif strncmpi(arg{n},'k'       ,1),      k =             arg{n+1};
-            elseif strncmpi(arg{n},'noisemethod',3),   noiseMethod =   arg{n+1}; 
             elseif strncmpi(arg{n},'cutOff'    ,2),    cutOff =        arg{n+1}; 
-            elseif strncmpi(arg{n},'g'       ,1),      g =             arg{n+1};                    
+            elseif strncmpi(arg{n},'g'       ,1),      g =             arg{n+1};
+            elseif strncmpi(arg{n},'deviation',3),     deviationGain = arg{n+1}; 
+            elseif strncmpi(arg{n},'noisemethod',3),   noiseMethod =   arg{n+1}; 
             else   error('Unrecognised parameter name');
             end
 
@@ -407,6 +416,11 @@ function [im, nscale, minWaveLength, mult, sigmaOnf, ...
         error('No image argument supplied');
     end
 
+    if ndims(im) == 3
+        warning('Colour image supplied: converting image to greyscale...')
+        im = double(rgb2gray(im));
+    end
+    
     if ~isa(im, 'double')
         im = double(im);
     end

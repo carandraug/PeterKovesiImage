@@ -51,7 +51,8 @@ function [F,e1,e2] = fundmatrix(varargin)
     [x1, T1] = normalise2dpts(x1);
     [x2, T2] = normalise2dpts(x2);
     
-    % Build the constraint matrix
+    % Build the constraint matrix.  Note that the line continuations are
+    % required so that we build a matrix with 9 columns (not 3)
     A = [x2(1,:)'.*x1(1,:)'   x2(1,:)'.*x1(2,:)'  x2(1,:)' ...
          x2(2,:)'.*x1(1,:)'   x2(2,:)'.*x1(2,:)'  x2(2,:)' ...
          x1(1,:)'             x1(2,:)'            ones(npts,1) ];       

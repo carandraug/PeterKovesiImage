@@ -16,17 +16,19 @@
 </table></center>
 
 <pre>
-    thresh = 500;   % Harris corner threshold
+    % Parameters
     nonmaxrad = 3;  % Non-maximal suppression radius
+    dmax = 50;      % Maximum search distance for matching
+    w = 11;         % Window size for correlation matching
     
     im1 = imread('im1.jpg');
     im2 = imread('im2.jpg');
 
-    % Find Harris corners in image1 and image2
-    [cim1, r1, c1] = harris(im1, 1, thresh, 3);
+    % Find 100 strongest Harris corners in image1 and image2
+    [cim1, r1, c1] = harris(im1, 1, 0.04, 'N', 100, 'radius', nonmaxrad);
     show(im1,1), hold on, plot(c1,r1,'r+');
 
-    [cim2, r2, c2] = harris(im2, 1, thresh, 3);
+    [cim2, r2, c2] = harris(im2, 1, 0.04, 'N', 100, 'radius', nonmaxrad);
     show(im2,2), hold on, plot(c2,r2,'r+');
 </pre>
 
@@ -37,8 +39,7 @@
 
 <pre>
 
-    w = 7;    % Window size for correlation matching
-    [m1,m2] = matchbycorrelation(im1, [r1';c1'], im2, [r2';c2'], w);
+    [m1,m2] = matchbycorrelation(im1, [r1';c1'], im2, [r2';c2'], w, dmax);
 
     % Display putative matches
     show(im1,3), set(3,'name','Putative matches'), hold on    
@@ -96,6 +97,28 @@
     <td><img src=match2.jpg>
 </table></center>
 
+<br>
+<br>
+<p>Here's another way to visualize the matches suggested by Jos&eacute;
+L. Crespo which works rather nicely. It displays each image with the
+putative matches marked as circles with different colors.  Using the
+colorcube map produces different colors for nearby points allowing
+them to be distinguished from each other.
+<pre>
+   col=colormap(colorcube(size(m2,2)));
+   figure(1), imshow(im1,[]), hold on
+   scatter(m1(2,:),m1(1,:),[],col);
+   hold off
+  
+   figure(2), imshow(im2,[]), hold on
+   scatter(m2(2,:),m2(1,:),[],col);
+   hold off
+</pre>
+
+<center><table>
+<tr><td><img src=match1a.png>
+    <td><img src=match2a.png>
+</table></center>
 
 
 <a href=testfund.m>testfund.m</a> download the code above

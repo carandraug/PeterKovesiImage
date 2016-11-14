@@ -1,13 +1,13 @@
 
 body {
-margin-left: 80;
-margin-right: 80;
+margin-left: 10%;
+margin-right: 10%;
 margin-top: 50;
-
 font-family: Helvetica, Arial, Verdana, sans-serif;
 font-size: 14px;
 color: #000000;
 background-color: #F9F9F9;
+width:70em;
 }
 
 table{

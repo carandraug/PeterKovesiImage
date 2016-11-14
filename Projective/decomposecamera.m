@@ -1,28 +1,29 @@
 % DECOMPOSECAMERA  Decomposition of a camera projection matrix
 %
-% Usage:  [K, R, C, pp, pv] = decomposecamera(P);
+% Usage:  [K, Rc_w, Pc, pp, pv] = decomposecamera(P);
 %
-%    P is decomposed into the form P = K*[R -R*C]
+%    P is decomposed into the form P = K*[R -R*Pc]
 %
 % Argument:  P - 3 x 4 camera projection matrix
 % Returns:   
 %            K - Calibration matrix of the form
-%                  |  ax   s   x0  |
-%                  |   0   ay  y0  |
+%                  |  ax   s   ppx |
+%                  |   0   ay  ppy |
 %                  |   0   0    1  |
 %
 %                Where: 
 %                ax = f/pixel_width and ay = f/pixel_height,
-%                x0 and y0 define the principal point in pixels,
+%                ppx and ppy define the principal point in pixels,
 %                s is the camera skew.
-%            R - 3 x 3 rotation matrix defining the orientation of the camera
-%                in world coordinates. Columns of R define the directions of
-%                the camera X, Y and Z axes in world coordinates.
-%            C - Camera centre position in world coordinates.
+%         Rc_w - 3 x 3 rotation matrix defining the world coordinate frame
+%                in terms of the camera frame. Columns of R transposed define
+%                the directions of the camera X, Y and Z axes in world
+%                coordinates. 
+%           Pc - Camera centre position in world coordinates.
 %           pp - Image principal point.
 %           pv - Principal vector  from the camera centre C through pp
 %                pointing out from the camera.  This may not be the same as  
-%                R(:,3) if the principal point is not at the centre of the
+%                R'(:,3) if the principal point is not at the centre of the
 %                image, but it should be similar. 
 %
 % See also: RQ3
@@ -42,9 +43,10 @@
 % The above copyright notice and this permission notice shall be included in 
 % all copies or substantial portions of the Software.
 %
-% October 2010
+% October  2010  Original version
+% November 2013  Description of rotation matrix R corrected (transposed)
 
-function [K, R, C, pp, pv] = decomposecamera(P)
+function [K, Rc_w, Pc, pp, pv] = decomposecamera(P)
     
     % Projection matrix from Hartley and Zisserman p 163 used for testing
     if ~exist('P','var')
@@ -68,11 +70,11 @@ function [K, R, C, pp, pv] = decomposecamera(P)
     Z =  det([p1 p2 p4]);
     T = -det([p1 p2 p3]);    
     
-    C = [X;Y;Z;T];  
-    C = C/C(4);   
-    C = C(1:3);     % Make inhomogeneous
+    Pc = [X;Y;Z;T];  
+    Pc = Pc/Pc(4);   
+    Pc = Pc(1:3);     % Make inhomogeneous
     
-    % C = null(P,'r'); % numerical way of computing C
+    % Pc = null(P,'r'); % numerical way of computing C
     
     % Principal point
     pp = M*m3;
@@ -84,10 +86,10 @@ function [K, R, C, pp, pv] = decomposecamera(P)
     pv = pv/norm(pv);
     
     % Perform RQ decomposition of M matrix. Note that rq3 returns K with +ve
-    % diagonal elements, as required for the calibration marix.
-    [K R] = rq3(M);
-    
+    % diagonal elements, as required for the calibration matrix.
+    [K Rc_w] = rq3(M);
+
     % Check that R is right handed, if not give warning
-    if dot(cross(R(:,1), R(:,2)), R(:,3)) < 0
+    if dot(cross(Rc_w(:,1), Rc_w(:,2)), Rc_w(:,3)) < 0
         warning('Note that rotation matrix is left handed');
     end

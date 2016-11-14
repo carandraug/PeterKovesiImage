@@ -19,6 +19,7 @@
 % PK March 2010
 %    May   2011 Modified to automatically find all figures and allow you to
 %               use arrow keys and single digit figure numbers.
+%    Feb   2014 Automatically allign the positions of the specified figures
 
 function togglefigs(varargin)
     
@@ -35,6 +36,13 @@ function togglefigs(varargin)
             fprintf('digit figure numbers to select figures directly, hit ''X'' to exit\n'); 
         end
 
+        
+        % Set figures so that they all have the same position
+        posn = get(figs(1),'Position');  
+        for n = 2:length(figs)
+            set(figs(n),'Position',posn);
+        end        
+        
         figIndex = 1;
         figure(figs(figIndex));
         while 1
@@ -57,6 +65,13 @@ function togglefigs(varargin)
 
     else  % Cycle through the list of figure numbers supplied in the argument list
         fprintf('Hit any key to toggle figures, ''X'' to exit\n'); 
+        
+        % Set figures so that they all have the same position
+        posn = get(figs(1),'Position');  
+        for n = 2:length(figs)
+            set(figs(n),'Position',posn);
+        end
+        
         while 1
             for n = 1:length(figs)
                 figure(figs(n));

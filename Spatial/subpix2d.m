@@ -31,6 +31,10 @@
 %
 % See also: SUBPIX3D
 
+% ** I am not entirely satisfied with the output of this function. Perhaps using
+% finite differences for derivative calculation is a problem, try using Farid
+% and Simoncelli's approach? **
+
 % Copyright (c) 2010 Peter Kovesi
 % Centre for Exploration Targeting
 % School of Earth and Environment
@@ -97,10 +101,10 @@ function [rs, cs] = subpix2d(R, C, L)
             % neighbouring pixel, but this is inconsistent with the
             % assumption that the input data represents extrema locations to
             % pixel precision.  Hence these points are rejected
-            if all(abs(dx) <= 0.5) 
+%            if all(abs(dx) <= 0.5) 
                 m = m + 1;
-                x(:,m) = [r;c] + dx;
-            end
+                x(:,m) = [r;c] + dx;  
+%            end
         end
     
     end

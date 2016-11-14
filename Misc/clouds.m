@@ -23,7 +23,7 @@ function clouds(size, factor, meandev, stddev, lowvel, velfactor, nframes)
 
 rows = size;
 cols = size;
-phase = random('Uniform',0,2*pi,size,size);  % Random uniform distribution 0 - 2pi
+phase = 2*pi*rand(size,size);  % Random uniform distribution 0 - 2pi
 
 % Create two matrices, x and y. All elements of x have a value equal to its 
 % x coordinate relative to the centre, elements of y have values equal to 
@@ -48,14 +48,14 @@ phasemod = fftshift(radius.^velfactor + lowvel);
 
 
 for n = 1:nframes
-  disp(n);
-  dphase = random('norm',meandev,stddev,size,size);  % Random normal distribution 
+  if ~mod(n,10), fprintf('\r %d', n); end
+  dphase = meandev + stddev*randn(size,size);
   dphase = dphase.*phasemod;
 
   phase = phase + dphase;
   newfft =  filter .* exp(i*phase);
   im = real(ifft2(newfft)); % Invert to obtain final noise image
-  imagesc(im), axis('equal'), axis('off');
+  show(im,1), colormap(gray); axis('equal'), axis('off');
 
    if n==1
      CloudMovie = moviein(nframes);
@@ -66,6 +66,6 @@ for n = 1:nframes
 
 end
 
-movie(CloudMovie,-5,12);
+movie(CloudMovie,-4,12);
 
 save('CloudMovie','CloudMovie');

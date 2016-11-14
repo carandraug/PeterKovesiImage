@@ -8,8 +8,7 @@
 %                  3xn matrix of inhomogeneous 3-vectors to be rotated
 % Returns:    v2 - The rotated vectors. 
 %
-% See also: MATRIX2ANGLEAXIS, NEWANGLEAXIS, ANGLEAXIS2MATRIX, ANGLEAXIS2MATRIX2,
-%           NORMALISEANGLEAXIS
+% See also: MATRIX2ANGLEAXIS, NEWANGLEAXIS, ANGLEAXIS2MATRIX, NORMALISEANGLEAXIS
 
 % Copyright (c) 2008 Peter Kovesi
 % School of Computer Science & Software Engineering

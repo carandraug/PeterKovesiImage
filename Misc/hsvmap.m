@@ -19,7 +19,7 @@
 % hsvmap(0, 1, 256) will generate a colourmap that is identical to MATLAB's hsv
 % colourmap.
 %
-% See also: LABMAP, GRAYMAP, HSV, GRAY
+% See also: LABMAP, GRAYMAP, RANDMAP, BILATERALMAP, HSV, GRAY
 
 % Copyright (c) 2012 Peter Kovesi
 % Centre for Exploration Targeting

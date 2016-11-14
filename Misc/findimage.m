@@ -8,6 +8,8 @@
 % Returns:
 %             im - image
 %       filename - filename of image
+%
+% See Also: FINDIMAGES
 
 % Peter Kovesi  
 % School of Computer Science & Software Engineering

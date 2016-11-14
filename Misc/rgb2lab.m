@@ -1,28 +1,33 @@
 % RGB2LAB - RGB to L*a*b* colour space
 %
-% Usage: Lab = rgb2lab(im)
+% Usage: Lab = rgb2lab(im, wp)
 %
-% This function wraps up calls to MAKECFORM and APPLYCFORM in a conveenient
+% Arguments:  im - RGB image or Nx3 colourmap for conversion
+%             wp - Optional string specifying the adapted white point.
+%                  This defaults to 'D65'.
+%
+% Returns:   Lab - The converted image or colourmap.
+%
+% This function wraps up calls to MAKECFORM and APPLYCFORM in a convenient
 % form.  Note that if the image is of type uint8 this function casts it to
-% double and divides by 255 so that the transformed image can have the
-% proper negative values for a and b.  (If the image is left as uint8 MATLAB
-% will shift the values into the range 0-255)
+% double and divides by 255 so that RGB values are in the range 0-1 and the
+% transformed image can have the proper negative values for a and b.  
+%
+% See also: LAB2RGB, RGB2NRGB, RGB2CMYK
 
-% Copyright (c) 2009 Peter Kovesi
-% School of Computer Science & Software Engineering
+% Peter Kovesi
+% Centre for Exploration Targeting
 % The University of Western Australia
-% pk at csse uwa edu au
-% http://www.csse.uwa.edu.au/
+% peter.kovesi at uwa edu au
 
 % PK May 2009
 
-function Lab = rgb2lab(im)
+function Lab = rgb2lab(im, wp)
 
-%    if ndims(im) ~= 3;
-%        error('Image must be a colour image');
-%    end
+    if ~exist('wp', 'var'), wp = 'D65'; end
     
-    cform = makecform('srgb2lab');
+    cform = makecform('srgb2lab',...
+                      'adaptedwhitepoint', whitepoint(wp));    
     if strcmp(class(im),'uint8')
         im = double(im)/255;
     end

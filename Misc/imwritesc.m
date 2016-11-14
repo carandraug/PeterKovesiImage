@@ -24,6 +24,7 @@
 % October 1999   - Original version
 % March   2004   - Modified to allow colour images of class 'double'
 % August  2005   - Octave compatibility
+% January 2013   - Separate Octave code path no longer needed
 
 function imwritesc(im,name)
 

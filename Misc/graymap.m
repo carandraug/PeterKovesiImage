@@ -6,7 +6,7 @@
 %                          colourmap. Defaults are 0 and 1
 %                      N - Number of elements in the colourmap. Default = 256.
 %
-% See also: HSVMAP, LABMAP, HSV, GRAY
+% See also: HSVMAP, LABMAP, RANDMAP, BILATERALMAP, HSV, GRAY
 
 % Peter Kovesi
 % Centre for Exploration Targeting

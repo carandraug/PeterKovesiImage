@@ -1,17 +1,20 @@
 % FILLNAN  - fills NaN values in an image with closest non Nan value
 %
-% NaN values in an image are replaced with the value in the closest pixel
-% that is not a NaN.
+% NaN values in an image are replaced with the value in the closest pixel that
+% is not a NaN.  This can be used as a crude (but quick) 'inpainting' function
+% to allow a FFT to be computed on an image containing NaN values.  While the
+% 'inpainting' is very crude it is typically good enough to remove most of the
+% edge effects one might get at the boundaries of the NaN regions.  The NaN
+% regions should then be remasked out of the final processed image.
 %
 % Usage:  [newim, mask] = fillnan(im);
 %
 %   Argument:  im    - Image to be 'filled'
 %   Returns:   newim - Filled image
-%              mask  - Binary image indicating regions in the original image
-%                      which were non NaN
+%              mask  - Binary image indicating NaN regions in the original
+%                      image.
 %
 % See Also: REMOVENAN
-
 
 % Copyright (c) 2007 Peter Kovesi
 % School of Computer Science & Software Engineering
@@ -28,7 +31,6 @@
 %
 % The Software is provided "as is", without warranty of any kind.
 
-
 function [newim, mask] = fillnan(im);
     
     % Generate distance transform from non NaN regions of the image. 
@@ -41,15 +43,13 @@ function [newim, mask] = fillnan(im);
         return
     end
     
-    [dist,L] = bwdist(mask);   
+    [~,L] = bwdist(mask);   
     
-    [r,c] = find(isnan(im));  % Indices of points that are NaN
-    
-    newim = im;
+    ind = find(isnan(im));  % Indices of points that are NaN
     
     % Fill NaN locations with value of closest non NaN pixel
-    for n = 1:length(r)
-	   newim(r(n),c(n)) = im(L(r(n),c(n)));
-    end
+    newim = im;
+    newim(ind) = im(L(ind));
+
     
     

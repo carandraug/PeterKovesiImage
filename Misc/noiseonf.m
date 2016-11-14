@@ -14,10 +14,10 @@
 %               = 1.5 - seems to give the most interesting 'cloud patterns'
 %               = 2 or greater - produces 'blobby' images
 
-% Copyright (c) 1996-2011 Peter Kovesi
+% Copyright (c) 1996-2014 Peter Kovesi
 % Centre for Exploration Targeting
 % The University of Western Australia
-% http://www.csse.uwa.edu.au/~pk
+% peter.kovesi at uwa edu au
 % 
 % Permission is hereby granted, free of charge, to any person obtaining a copy
 % of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@
 %  December  1996
 %  March     2009 Arbitrary image size 
 %  September 2011 Code tidy up
+%  April     2014 Fixed to work with odd dimensioned images
 
 function im = noiseonf(sze, factor)
     
@@ -43,20 +44,19 @@ function im = noiseonf(sze, factor)
     % Generate an image of random Gaussian noise, mean 0, std dev 1.    
     im = randn(rows,cols); 
     
-    imfft = fftshift(fft2(im));      % Take fft of image.
+    imfft = fft2(im);
     mag = abs(imfft);                % Get magnitude
     phase = imfft./mag;              % and phase
     
     % Construct the amplitude spectrum filter
-    [x,y] = meshgrid([-cols/2:(cols/2-1)], [-rows/2:(rows/2-1)]);
-    radius = sqrt(x.^2 + y.^2);     % Matrix values contain radius from centre.
-    radius(rows/2+1,cols/2+1) = 1;  % .. avoid division by zero.
-    filter = 1./(radius.^factor);   % Construct the filter.
+    % Add 1 to avoid divide by 0 problems later
+    radius = filtergrid(rows,cols)*max(rows,cols) + 1;  
+    filter = 1./(radius.^factor);  
     
     % Reconstruct fft of noise image, but now with the specified amplitude
     % spectrum
     newfft =  filter .* phase; 
-    im = real(ifft2(fftshift(newfft))); % Invert to obtain final noise image
+    im = real(ifft2(newfft)); 
 
 %caption = sprintf('noise with 1/(f^%2.1f) amplitude spectrum',factor);
 %imagesc(im), axis('equal'), axis('off'), title(caption);

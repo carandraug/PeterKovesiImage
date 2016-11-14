@@ -1,7 +1,7 @@
 % ANGLEAXIS2MATRIX - converts angle-axis descriptor to 4x4 homogeneous
 % transformation  matrix
 %
-% Usage:     T = amgleaxis2matrix(t)
+% Usage:     T = angleaxis2matrix(t)
 %
 % Argument:  t - 3-vector giving rotation axis with magnitude equal to the
 %                rotation angle in radians.

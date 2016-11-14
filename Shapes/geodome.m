@@ -43,7 +43,8 @@
 %
 % The Software is provided "as is", without warranty of any kind.
 
-% May 2009
+% May   2009 
+% April 2014  - Dome radius scaling fixed (thanks to Brad Keserich)
 
 function [xyz, A, F] = geodome(frequency, radius)
 
@@ -110,7 +111,7 @@ function [xyz, A, F] = geodome(frequency, radius)
     
     end
 
-    xyx = xyz*radius;       % Scale vertices to required radius
+    xyz = xyz*radius;       % Scale vertices to required radius
     A = adjacency(xyz);
     F = faces(A);
 

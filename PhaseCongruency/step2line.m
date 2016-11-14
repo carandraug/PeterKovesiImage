@@ -37,7 +37,7 @@
 %
 % 1997            Original version
 % September 2011  Modified to allow number of cycles to be specified
-% January 2013    Fix Octave compatibility
+% January 2013    Fix Octave compatibility. Separate Octave code path no longer needed
 
 function im = step2line(nscales, ampexponent, Npts, nCycles, phaseCycles)
 

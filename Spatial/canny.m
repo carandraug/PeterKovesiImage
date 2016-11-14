@@ -5,8 +5,8 @@
 % Usage: [gradient or] = canny(im, sigma)
 %
 % Arguments:   im    - image to be procesed
-%              sigma - standard deviation of Gaussian smoothing filter
-%                      (typically 1)
+%              sigma - standard deviation of Gaussian smoothing filter.
+%                      Optional, defaults to 1.
 %
 % Returns:     gradient - edge strength image (gradient amplitude)
 %              or       - orientation image (in degrees 0-180, positive
@@ -38,10 +38,12 @@
 % January 2003  Error in calculation of d2 corrected
 % August  2010  Changed to use derivatives computed using Farid and
 %               Simoncelli's filters. Cleaned up
+% May     2013  Sigma optional with default of 1
 
 function [gradient, or] = canny(im, sigma)
 
     assert(ndims(im) == 2, 'Image must be greyscale');
+    if ~exist('sigma', 'var'), sigma = 1; end
     
     % If needed convert im to double
     if ~strcmp(class(im),'double')

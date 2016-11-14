@@ -56,7 +56,8 @@
 % The Software is provided "as is", without warranty of any kind.
 
 % April 2000 - original version.
-% July 2001  - transformation of region boundaries corrected.
+% July  2001 - transformation of region boundaries corrected.
+% May   2016 - Minor tidying
 
 function [newim, newT] = imTrans(im, T, region, sze);
 
@@ -65,27 +66,17 @@ if isa(im,'uint8')
 end
 
 % Set up default region and transformed image size values
-if ndims(im) == 3
-    [rows cols depth] = size(im);
-else
-    [rows cols] = size(im);
-    depth = 1;
+[rows, cols, chan] = size(im);
+
+if ~exist('region', 'var') || isempty(region)
+    region = [1 rows 1 cols];    
 end
 
-if nargin == 2
-    region = [1 rows 1 cols];
-    sze = max([rows cols]);
-elseif nargin == 3    
-    sze = max([rows cols]);
+if ~exist('sze', 'var') || isempty(sze)
+    sze = max([rows, cols]);
 end
 
-if isempty(region)
-    region = [1 rows 1 cols];
-end
-
-	
-threeD = (ndims(im)==3);  % A colour image
-if threeD    % Transform red, green, blue components separately
+if chan == 3    % Transform red, green, blue components separately
     im = im/255;  
     [r, newT] = transformImage(im(:,:,1), T, region, sze);
     [g, newT] = transformImage(im(:,:,2), T, region, sze);
@@ -108,22 +99,9 @@ function [newim, newT] = transformImage(im, T, region, sze);
 
 [rows, cols] = size(im);
 
-if 0
-% Determine default parameters if needed
-if nargin == 2
-  region = [1 rows 1 cols];
-  sze = max(rows,cols);
-elseif nargin == 3
-  sze = max(rows,cols);
-elseif nargin ~= 4
-  error('Incorrect arguments to imtrans');
-end
-end
 % Cut the image down to the specified region
-%if nargin == 3 | nargin == 4
-    im = im(region(1):region(2), region(3):region(4));
-    [rows, cols] = size(im);
-%end
+im = im(region(1):region(2), region(3):region(4));
+[rows, cols] = size(im);
 
 % Find where corners go - this sets the bounds on the final image
 B = bounds(T,region);

@@ -6,7 +6,9 @@
 % Returns:  rpy1 = [phi1, theta1, psi1] - the 1st solution and
 %           rpy2 = [phi2, theta2, psi2] - the 2nd solution
 %
-%  rotx(phi1)*roty(theta1)*rotz(psi1) = RPY
+%    rotz(phi1)  * roty(theta1)  * rotx(psi1)    = RPY
+%  rotz(rpy1(1)) * roty(rpy1(2)) * rotx(rpy1(3)) = RPY
+%
 %
 % See also: INVEULER, INVHT, ROTX, ROTY, ROTZ
 
@@ -18,15 +20,20 @@
 % The University of Western Australia
 % pk at csse uwa edu au
 % http://www.csse.uwa.edu.au/
+%
+% May 2015 Help documentation corrected!
 
 function [rpy1, rpy2] = invrpy(RPY)
 
-    phi1 = atan2(RPY(2,1), RPY(1,1));
+    % Z rotation 
+    phi1 = atan2(RPY(2,1), RPY(1,1));  
     phi2 = phi1 + pi;
     
+    % Y rotation
     theta1 = atan2(-RPY(3,1), cos(phi1)*RPY(1,1) + sin(phi1)*RPY(2,1));
     theta2 = atan2(-RPY(3,1), cos(phi2)*RPY(1,1) + sin(phi2)*RPY(2,1));
     
+    % X rotation
     psi1 = atan2(sin(phi1)*RPY(1,3) - cos(phi1)*RPY(2,3), ...
                  -sin(phi1)*RPY(1,2) + cos(phi1)*RPY(2,2));
     psi2 = atan2(sin(phi2)*RPY(1,3) - cos(phi2)*RPY(2,3), ...

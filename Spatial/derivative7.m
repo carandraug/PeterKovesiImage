@@ -1,4 +1,4 @@
-% DERIVATIVE5 - 7-Tap 1st and 2nd discrete derivatives
+% DERIVATIVE7 - 7-Tap 1st and 2nd discrete derivatives
 %
 % This function computes 1st and 2nd derivatives of an image using the 7-tap
 % coefficients given by Farid and Simoncelli.  The results are significantly

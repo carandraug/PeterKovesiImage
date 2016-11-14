@@ -26,9 +26,10 @@
 %
 % The Software is provided "as is", without warranty of any kind.
 
-% May 2000
+% May  2000
+% June 2014  Fixed class of returned image for colour images
 
-function [f1, f2] = extractfields(im,interpstring)
+function [f1, f2] = extractfields(im, interpstring)
     
     if nargin < 2
 	interpstring = 'nointerp';
@@ -38,25 +39,39 @@ function [f1, f2] = extractfields(im,interpstring)
 	[f1r, f2r] = extractFieldsI(im(:,:,1), interpstring);
 	[f1g, f2g] = extractFieldsI(im(:,:,2), interpstring);
 	[f1b, f2b] = extractFieldsI(im(:,:,3), interpstring);
-	
-	% Reform colour image for field 1
-	f1 = repmat(uint8(0),[size(f1r),3]);
-	f1(:,:,1) = uint8(round(f1r));
-	f1(:,:,2) = uint8(round(f1g));
-	f1(:,:,3) = uint8(round(f1b));
-	
-	% Reform colour image for field 2
-	f2 = repmat(uint8(0),[size(f2r),3]);
-	f2(:,:,1) = uint8(round(f2r));
-	f2(:,:,2) = uint8(round(f2g));
-	f2(:,:,3) = uint8(round(f2b));
-	
+
+        if strcmp(class(im),'double')
+            f1 = zeros([size(f1r),3]);
+            f1(:,:,1) = f1r;
+            f1(:,:,2) = f1g;
+            f1(:,:,3) = f1b;
+            
+            f2 = zeros([size(f2r),3]);
+            f2(:,:,1) = f2r;
+            f2(:,:,2) = f2g;
+            f2(:,:,3) = f2b;    
+        else
+            
+            % Reform colour image for field 1
+            f1 = repmat(uint8(0),[size(f1r),3]);
+            f1(:,:,1) = uint8(round(f1r));
+            f1(:,:,2) = uint8(round(f1g));
+            f1(:,:,3) = uint8(round(f1b));
+            
+            % Reform colour image for field 2
+            f2 = repmat(uint8(0),[size(f2r),3]);
+            f2(:,:,1) = uint8(round(f2r));
+            f2(:,:,2) = uint8(round(f2g));
+            f2(:,:,3) = uint8(round(f2b));
+            
+        end
+        
     else         % Assume grey scale image
 	[f1, f2] = extractFieldsI(im,interpstring);
     end
     
-    
-function  [f1, f2] = extractFieldsI(im,interpstring)
+%--------------------------------------------------------------    
+function  [f1, f2] = extractFieldsI(im, interpstring)
     
     [rows,cols] = size(im);
     im = double(im);
@@ -77,7 +92,7 @@ function  [f1, f2] = extractFieldsI(im,interpstring)
     
     if mod(rows,2) == 1
 	rows = rows-1;        % This ensures even and odd fields end up with 
-    end                     % the same No of rows
+    end                       % the same No of rows
     
     f1 = im(1:2:rows,:);   % odd lines
     f2 = im(2:2:rows,:);   % even lines

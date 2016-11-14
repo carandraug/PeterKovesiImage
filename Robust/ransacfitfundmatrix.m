@@ -39,6 +39,8 @@
 
 % February 2004  Original version
 % August   2005  Distance error function changed to match changes in RANSAC
+% February 2016  Catch case when ransac fails so that we skip trying a final 
+%                least squares solution
 
 function [F, inliers] = ransacfitfundmatrix(x1, x2, t, feedback)
 
@@ -51,7 +53,7 @@ function [F, inliers] = ransacfitfundmatrix(x1, x2, t, feedback)
     end
     
     [rows,npts] = size(x1);
-    if rows~=2 & rows~=3
+    if ~(rows==2 || rows==3)
         error('x1 and x2 must have 2 or 3 rows');
     end
     
@@ -78,6 +80,10 @@ function [F, inliers] = ransacfitfundmatrix(x1, x2, t, feedback)
     % x1 and x2 are 'stacked' to create a 6xN array for ransac
     [F, inliers] = ransac([x1; x2], fittingfn, distfn, degenfn, s, t, feedback);
 
+    if isempty(F)  % ransac failed to find a solution.
+       return;     % Do not attempt to do a final least squares fit
+    end
+    
     % Now do a final least squares fit on the data points considered to
     % be inliers.
     F = fundmatrix(x1(:,inliers), x2(:,inliers));
@@ -89,7 +95,7 @@ function [F, inliers] = ransacfitfundmatrix(x1, x2, t, feedback)
 % Function to evaluate the first order approximation of the geometric error
 % (Sampson distance) of the fit of a fundamental matrix with respect to a
 % set of matched points as needed by RANSAC.  See: Hartley and Zisserman,
-% 'Multiple View Geometry in Computer Vision', page 270.
+% 'Multiple View Geometry in Computer Vision', 2nd Ed. page 287.
 %
 % Note that this code allows for F being a cell array of fundamental matrices of
 % which we have to pick the best one. (A 7 point solution can return up to 3

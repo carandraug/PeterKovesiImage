@@ -1,6 +1,6 @@
 % CLEANUPREGIONS   Cleans up small segments in an image of segmented regions
 %
-% Usage: seg = cleanupregions(seg, areaThresh)
+% Usage: [seg, Am] = cleanupregions(seg, areaThresh, connectivity)
 %
 % Arguments: seg - A region segmented image, such as might be produced by a
 %                  graph cut algorithm.  All pixels in each region are labeled
@@ -9,25 +9,28 @@
 %                  adjacent segment.  I find a value of about 1/20th of the
 %                  expected mean segment area, or 1/1000th of the image area
 %                  usually looks 'about right'.
+%   connectivity - Specify 8 or 4 connectivity.  If not specified 8
+%                  connectivity is assumed.
 %
-%  Note that regions with a label of 0 are ignored.  If you want these
+%  Note that regions with a label of 0 are ignored.  These are treated as
+%  privileged 'background regions' and are untouched.  If you want these
 %  regions to be considered you should assign a new positive label to these
 %  areas using, say
 %  >> L(L==0) = max(L(:)) + 1;
 %
-%  8 connectivity is assumed
-%
 % Returns:   seg - The updated segment image.
+%             Am - Adjacency matrix of segments.  Am(i, j) indicates whether
+%                  segments labeled i and j are connected/adjacent
 %
 % Typical application:
-% If a graph cut algorithm fails to converge stray segments can be left in the
-% result.  This function tries to clean things up by:
+% If a graph cut or superpixel algorithm fails to converge stray segments
+% can be left in the result.  This function tries to clean things up by:
 % 1) Checking there is only one region for each segment label. If there is more
 %    than one region they are given unique labels.
 % 2) Eliminating regions below a specified size and assigning them a label of an
 %    adjacent region.
 %
-% See also: REGIONADJACENCY, RENUMBERREGIONS
+% See also: MCLEANUPREGIONS, REGIONADJACENCY, RENUMBERREGIONS
 
 % Copyright (c) 2010 Peter Kovesi
 % Centre for Exploration Targeting
@@ -42,10 +45,14 @@
 % The above copyright notice and this permission notice shall be included in 
 % all copies or substantial portions of the Software.
 %
-% October 2010
+% The Software is provided "as is", without warranty of any kind.
+%
+% October  2010 - Original version
+% February 2013 - Connectivity choice, function returns adjacency matrix.
 
-function seg = cleanupregions(seg, areaThresh, prioritySeg)
+function [seg, Am] = cleanupregions(seg, areaThresh, connectivity, prioritySeg)
 
+    if ~exist('connectivity','var'), connectivity = 8; end
     if ~exist('prioritySeg','var'), prioritySeg = -1; end
     
     % 1) Ensure every segment is distinct but do not touch segments with a
@@ -55,7 +62,7 @@ function seg = cleanupregions(seg, areaThresh, prioritySeg)
     labels = setdiff(labels,0);  % Remove 0 from the label list
     
     for l = labels
-        [bl,num] = bwlabel(seg==l,8);  % (Use 8 connectedness)
+        [bl,num] = bwlabel(seg==l, connectivity);  
         
         if num > 1  % We have more than one region with the same label
             for n = 2:num
@@ -65,11 +72,11 @@ function seg = cleanupregions(seg, areaThresh, prioritySeg)
         end
     end
 
+    if areaThresh
     % 2) Merge segments with small areas
     stat = regionprops(seg,'area');  % Get segment areas
     area = cat(1, stat.Area);
     Am = regionadjacency(seg);       % Get adjacency matrix
-    
     labels = unique(seg(:))';
     labels = setdiff(labels,0);  % Remove 0 from the label list
     for n = labels
@@ -93,9 +100,14 @@ function seg = cleanupregions(seg, areaThresh, prioritySeg)
         end
     end
     
+    end
+    
     % 3) As some regions will have been absorbed into others and no longer exist
-    % we now renumber the regions so that they sequentially increase from 1
-    seg = renumberregions(seg);
+    % we now renumber the regions so that they sequentially increase from 1.
+    % We also need to reconstruct the adjacency matrix to reflect the reduced
+    % number of regions and their relabeling
+    [seg, minLabel, maxLabel] = renumberregions(seg);
+    Am = regionadjacency(seg);    
     
 %-------------------------------------------------------------------
 % Function to merge segment s2 into s1

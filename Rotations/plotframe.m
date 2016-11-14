@@ -1,37 +1,44 @@
 % PLOTFRAME - plots a coordinate frame specified by a homogeneous transform 
 %
-% Usage: function plotframe(T, len, label)
+% Usage: function plotframe(T, len, label, colr)
 %
 % Arguments:
-%    T     - 4x4 homogeneous transform
+%    T     - 4x4 homogeneous transform or 3x3 rotation matrix
 %    len   - length of axis arms to plot (defaults to 1)
 %    label - text string to append to x,y,z labels on axes
+%    colr  - Three element array spcifying colour to plot axes.
 %
-%  len and label are optional and default to 1 and '' respectively
+%  len, label and colr are optional and default to 1 and '' and [0 0 1]
+%  respectively.
 %
 % See also: ROTX, ROTY, ROTZ, TRANS, INVHT
 
-% Copyright (c) 2001 Peter Kovesi
-% School of Computer Science & Software Engineering
-% The University of Western Australia
-% pk at csse uwa edu au
-% http://www.csse.uwa.edu.au/
+% Peter Kovesi
+% www.peterkovesi.com
+% 2001       - Original version
+% April 2016 - Allowance for 3x3 rotation matrices as as well as 4x4 homogeneous
+%              transforms
 
 function plotframe(T, len, label, colr)
 
+    if all(size(T) == [3,3])  % we have a rotation matrix
+        T = [ T      [0;0;0]
+              0 0 0     1   ];
+    end
+    
     if ~all(size(T) == [4,4])
         error('plotframe: matrix is not 4x4')
     end
     
-    if ~exist('len','var')
+    if ~exist('len','var') || isempty(len)
         len = 1;
     end
     
-    if ~exist('label','var')    
+    if ~exist('label','var') || isempty(label)
         label = '';
     end
     
-    if ~exist('colr','var')    
+    if ~exist('colr','var') || isempty(colr)
         colr = [0 0 1];
     end    
     

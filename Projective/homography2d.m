@@ -15,14 +15,22 @@
 % This code follows the normalised direct linear transformation 
 % algorithm given by Hartley and Zisserman "Multiple View Geometry in
 % Computer Vision" p92.
-%
 
-% Peter Kovesi
+% Copyright (c) 2003-2005 Peter Kovesi
 % School of Computer Science & Software Engineering
 % The University of Western Australia
 % pk at csse uwa edu au
 % http://www.csse.uwa.edu.au/~pk
+% 
+% Permission is hereby granted, free of charge, to any person obtaining a copy
+% of this software and associated documentation files (the "Software"), to deal
+% in the Software without restriction, subject to the following conditions:
+% 
+% The above copyright notice and this permission notice shall be included in 
+% all copies or substantial portions of the Software.
 %
+% The Software is provided "as is", without warranty of any kind.
+
 % May 2003  - Original version.
 % Feb 2004  - Single argument allowed for to enable use with RANSAC.
 % Feb 2005  - SVD changed to 'Economy' decomposition (thanks to Paul O'Leary)

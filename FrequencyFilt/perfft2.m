@@ -28,13 +28,17 @@
 % typical vertical-horizontal 'cross' arising from the image boundaries that you
 % would normally see.
 %
+% Note if you are using the function to perform filtering in the frequency
+% domain you may want to retain s (the smooth component in the spatial domain)
+% and add it back to the filtered result at the end.  
+%
 % The computational cost of obtaining the 'periodic only' FFT involves taking an
 % additional FFT.
 %
 %
 % Reference: 
 % This code is adapted from Lionel Moisan's Scilab function 'perdecomp.sci' 
-% "Periodic plus Smooth Image Decomposition" 07/2012 avalailable at
+% "Periodic plus Smooth Image Decomposition" 07/2012 available at
 %
 %   http://www.mi.parisdescartes.fr/~moisan/p+s
 %

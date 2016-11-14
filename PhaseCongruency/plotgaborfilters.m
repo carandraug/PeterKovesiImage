@@ -19,12 +19,12 @@
 %    nscale          = 4;      Number of wavelet scales.
 %    norient         = 6;      Number of filter orientations.
 %    minWaveLength   = 3;      Wavelength of smallest scale filter.
-%    mult            = 2;      Scaling factor between successive filters.
+%    mult            = 1.7;    Scaling factor between successive filters.
 %    sigmaOnf        = 0.65;   Ratio of the standard deviation of the
 %                              Gaussian describing the log Gabor filter's
 %                              transfer function in the frequency domain
 %                              to the filter center frequency. 
-%    dThetaOnSigma   = 1.5;    Ratio of angular interval between filter
+%    dThetaOnSigma   = 1.3;    Ratio of angular interval between filter
 %                              orientations and the standard deviation of
 %                              the angular Gaussian function used to
 %                              construct filters in the freq. plane.
@@ -83,13 +83,19 @@
 %                 varying as the first index in the cell arrays.
 % July 2008     - Allow specific filter orientations to be specified in
 %                 norient via a cell array.
+% March 2013    - Restored use of dThetaOnSigma to control angular spread of filters.
 
 function [Ffilter, Efilter, Ofilter, filtersum] = ...
 	plotgaborfilters(sze, nscale, norient, minWaveLength, mult, ...
 				   sigmaOnf, dThetaOnSigma) 
 
-    rows = sze; cols = sze;
+    if ~exist('dThetaOnSigma','var') || isempty(dThetaOnSigma), dThetaOnSigma = 1.3;  end    
 
+    if length(sze) == 1
+        rows = sze; cols = sze;
+    else
+        rows = sze(1); cols = sze(2);
+    end
     
     if iscell(norient)   % Filter orientations and spread have been specified
                          % explicitly
@@ -165,11 +171,15 @@ function [Ffilter, Efilter, Ofilter, filtersum] = ...
 	ds = sintheta * cos(angl) - costheta * sin(angl); % Difference in sine.
 	dc = costheta * cos(angl) + sintheta * sin(angl); % Difference in cosine.
 	dtheta = abs(atan2(ds,dc));                       % Absolute angular distance.
-	spread = exp((-dtheta.^2) / (2 * thetaSigma^2));  % The angular filter component.
 
-	% Alternate spread function
-        dtheta = min(dtheta*norient,pi);
-        spread = (cos(dtheta)+1)/2;
+        if ~dThetaOnSigma  % If set to 0 use cosine angular weight spread
+                           % function. (I do not think this is a good spread function)
+                           
+            dtheta = min(dtheta*norient/2,pi);
+            spread = (cos(dtheta)+1)/2;
+        else               % Use a Gaussian angular spread function
+            spread = exp((-dtheta.^2) / (2 * thetaSigma^2));  
+        end
         
 	for s = 1:nscale,                  % For each scale.
 	   
@@ -184,7 +194,7 @@ function [Ffilter, Efilter, Ofilter, filtersum] = ...
 	    Ffilter{s,o} = logGabor .* spread;   % Multiply by the angular
 						 % spread to get the filter.
 					       
-            filtersum = filtersum + Ffilter{s,o};
+            filtersum = filtersum + Ffilter{s,o}.^2;
 						 
 	    Efilter{s,o} = ifftshift(real(ifft2(fftshift(Ffilter{s,o}))));
 	    Ofilter{s,o} = ifftshift(imag(ifft2(fftshift(Ffilter{s,o}))));
