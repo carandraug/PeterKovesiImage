@@ -1,1 +1,5 @@
+## upstream seems to use Mac
 .DS_Store
+
+## or Makefile downloads files here
+target/
